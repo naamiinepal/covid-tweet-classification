@@ -1,12 +1,12 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import Depends, Query
 from sqlmodel import Session, select
 
-from .database import get_or_404, get_session, save_and_refresh
-from .models import Hero, HeroCreate, HeroRead, HeroUpdate
+from app.database import get_or_404, get_session, save_and_refresh
 
-router = APIRouter(prefix="/heroes", tags=["heroes"])
+from . import router
+from .models import Hero, HeroCreate, HeroRead, HeroUpdate
 
 
 @router.post("/", response_model=HeroRead)

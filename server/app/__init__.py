@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 
-from . import models  # noqa
-from .database import create_tables
-from .hero_routes import router
+# Mount routers before database to read their database models
+from .auth import router as auth_router
+from .heroes import router as heroes_router
+
+from .database import create_tables  # isort: skip
 
 app = FastAPI()
 
@@ -17,4 +19,7 @@ async def root():
     return {"message": "Hello World"}
 
 
-app.include_router(router)
+# Register API Routers here
+
+app.include_router(auth_router)
+app.include_router(heroes_router)
