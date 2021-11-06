@@ -9,7 +9,7 @@ from sqlmodel import Session, select
 
 from app.database import get_session
 
-from .models import User
+from .models import Token, User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -85,6 +85,15 @@ def create_access_token(
         {**to_encode, "exp": expire}, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM
     )
     return encoded_jwt
+
+
+def create_access_token_from_username(username: str, *args, **kwargs):
+    """
+    Create an access token from a username.
+    This is a more specific version of `create_access_token`.
+    """
+    token = create_access_token({"sub": username}, *args, **kwargs)
+    return Token(access_token=token)
 
 
 def authenticate_user(session: Session, username: str, plain_password: str):

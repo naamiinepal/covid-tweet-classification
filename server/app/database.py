@@ -25,13 +25,14 @@ def get_or_404(session: Session, model: ModelType, id: int) -> ModelType:
     return row
 
 
-def save_and_refresh(session: Session, model: SQLModel):
+def save_and_refresh(session: Session, model: SQLModel, refresh: bool = True):
     """
-    Save a model and refresh it to ensure it's in the database
+    Save a model and refresh it to get the latest data
     """
     session.add(model)
     session.commit()
-    session.refresh(model)
+    if refresh:
+        session.refresh(model)
 
 
 def create_tables():

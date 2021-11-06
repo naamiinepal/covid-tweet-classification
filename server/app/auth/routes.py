@@ -6,7 +6,7 @@ from app.database import get_session, save_and_refresh
 from . import router
 from .helper_functions import (
     authenticate_user,
-    create_access_token,
+    create_access_token_from_username,
     get_current_user,
     get_password_hash,
     oauth2_scheme,
@@ -54,9 +54,7 @@ def login(
     if user is None:
         raise HTTPException(400, "Incorrect Username or Password")
 
-    access_token = create_access_token({"sub": user.username})
-
-    return Token(access_token=access_token, token_type="bearer")
+    return create_access_token_from_username(user.username)
 
 
 @router.post(
@@ -80,11 +78,10 @@ def register(
     hashed_password = get_password_hash(user.password)
     db_user = User.from_orm(user, {"hashed_password": hashed_password})
 
-    save_and_refresh(session, db_user)
+    # Save user to database but now db_user has expired and doesn't contain anything
+    save_and_refresh(session, db_user, refresh=False)
 
-    access_token = create_access_token({"sub": db_user.username})
-
-    return Token(access_token=access_token, token_type="bearer")
+    return create_access_token_from_username(user.username)
 
 
 @router.patch(
