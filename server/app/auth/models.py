@@ -1,43 +1,60 @@
 from typing import Optional
 
 from pydantic import BaseModel
+from sqlmodel import SQLModel, Field
 
 
-class User(BaseModel):
-    username: str
-    email: Optional[str] = None
-    full_name: Optional[str] = None
-    disabled: bool = False
+# Data Models
 
 
 class Token(BaseModel):
+    """
+    Token response model
+    """
+
     access_token: str
     token_type: str
 
 
-class UserInDB(User):
+class UserBase(SQLModel):
+    """
+    Base user model
+    """
+
+    username: str
+    email: Optional[str] = None
+    full_name: str
+
+
+class UserCreate(UserBase):
+    """
+    User create model
+    """
+
+    password: str
+
+
+class UserRead(UserBase):
+    """
+    User read model
+    """
+
+    id: int
+
+
+class UserUpdate(SQLModel):
+    """
+    User update model
+    """
+
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    password: Optional[str] = None
+
+
+# Table Models
+
+
+class User(UserBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     hashed_password: str
-
-
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": (
-            "$argon2id$v=19$m=102400,t=2,p=8$"
-            "mVPqPUdISUmpdW4tZWzt3Q$q2WMmuALp5Nq9SmGSpBGYQ"
-        ),  # secret
-        "disabled": False,
-    },
-    "alice": {
-        "username": "alice",
-        "full_name": "Alice Wonderson",
-        "email": "alice@example.com",
-        "hashed_password": (
-            "$argon2id$v=19$m=102400,t=2,p=8$"
-            "fW8tpZRSSomR0lqLMca41w$zEsDdx97ejBsxbSOy6wIlQ"
-        ),  # secret2
-        "disabled": True,
-    },
-}

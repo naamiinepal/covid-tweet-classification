@@ -1,14 +1,18 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlmodel import Session
+from app.database import get_session, save_and_refresh
 
 from . import router
 from .helper_functions import (
     authenticate_user,
     create_access_token,
-    get_current_active_user,
+    get_current_user,
+    get_password_hash,
     oauth2_scheme,
+    get_user,
 )
-from .models import Token, User
+from .models import Token, UserCreate, UserRead, User, UserUpdate
 
 
 @router.get(
@@ -16,31 +20,103 @@ from .models import Token, User
     responses={401: {"description": "User Not Authenticated"}},
 )
 async def get_items(token: str = Depends(oauth2_scheme)):
+    """
+    Get all items after authentication
+    """
     return {"token": token}
 
 
 @router.get(
     "/me",
-    response_model=User,
-    responses={
-        400: {"description": "Inactive User"},
-        401: {"description": "Authentication Error"},
-    },
+    response_model=UserRead,
+    responses={401: {"description": "Authentication Error"}},
 )
-async def get_users_me(current_user: User = Depends(get_current_active_user)):
+async def get_users_me(current_user: UserRead = Depends(get_current_user)):
+    """
+    Get current user
+    """
     return current_user
 
 
 @router.post(
-    "/token",
+    "/login",
     response_model=Token,
     responses={400: {"description": "Incorrect Username or Password"}},
 )
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = await authenticate_user(form_data.username, form_data.password)
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    session: Session = Depends(get_session),
+):
+    """
+    Login user and return access token
+    """
+    user = authenticate_user(session, form_data.username, form_data.password)
     if user is None:
         raise HTTPException(400, "Incorrect Username or Password")
 
-    access_token = await create_access_token({"sub": user.username})
+    access_token = create_access_token({"sub": user.username})
 
     return Token(access_token=access_token, token_type="bearer")
+
+
+@router.post(
+    "/register",
+    response_model=Token,
+    responses={400: {"description": "The Username Already Exists"}},
+)
+def register(
+    user: UserCreate,
+    session: Session = Depends(get_session),
+):
+    """
+    Register user and return access token
+    """
+    user_exits = get_user(session, user.username) is not None
+    if user_exits:
+        raise HTTPException(
+            status_code=400, detail=f"The username: {user.username} already exists"
+        )
+
+    hashed_password = get_password_hash(user.password)
+    db_user = User.from_orm(user, {"hashed_password": hashed_password})
+
+    save_and_refresh(session, db_user)
+
+    access_token = create_access_token({"sub": db_user.username})
+
+    return Token(access_token=access_token, token_type="bearer")
+
+
+@router.patch(
+    "/update",
+    response_model=UserRead,
+    responses={
+        401: {"description": "Authentication Error"},
+        400: {"description": "No Valid Data to Update"},
+    },
+)
+def update(
+    user: UserUpdate,
+    db_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    """
+    Update current user
+    """
+
+    # Exclude the ones not sent by client
+    user_dict = user.dict(exclude_none=True)
+
+    if len(user_dict) == 0:
+        raise HTTPException(status_code=400, detail="No Valid Data to Update")
+
+    for key, value in user_dict.items():
+        if key == "password":
+            hashed_password = get_password_hash(value)
+            db_user.hashed_password = hashed_password
+        else:
+            setattr(db_user, key, value)
+
+    save_and_refresh(session, db_user)
+
+    return db_user

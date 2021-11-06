@@ -11,6 +11,9 @@ from .models import Hero, HeroCreate, HeroRead, HeroUpdate
 
 @router.post("/", response_model=HeroRead)
 def create_hero(hero: HeroCreate, session: Session = Depends(get_session)):
+    """
+    Create a new hero.
+    """
     db_hero = Hero.from_orm(hero)
     save_and_refresh(session, db_hero)
     return db_hero
@@ -22,6 +25,9 @@ def read_heroes(
     limit: int = Query(default=10, lt=11),
     session: Session = Depends(get_session),
 ):
+    """
+    Read heroes within the offset and limit
+    """
     heroes = session.exec(select(Hero).offset(offset).limit(limit)).all()
     return heroes
 
@@ -32,6 +38,9 @@ def read_heroes(
     responses={404: {"description": "Hero Not found"}},
 )
 def read_hero(hero_id: int, session: Session = Depends(get_session)):
+    """
+    Read a hero by id.
+    """
     hero = get_or_404(session, Hero, hero_id)
     return hero
 
@@ -44,6 +53,9 @@ def read_hero(hero_id: int, session: Session = Depends(get_session)):
 def update_hero(
     hero_id: int, hero: HeroUpdate, session: Session = Depends(get_session)
 ):
+    """
+    Update a hero by id.
+    """
     db_hero = get_or_404(session, Hero, hero_id)
 
     # Exclude the ones not sent by the client
@@ -58,6 +70,9 @@ def update_hero(
 
 @router.delete("/{hero_id}", responses={404: {"description": "Hero Not found"}})
 def delete_hero(hero_id: int, session: Session = Depends(get_session)):
+    """
+    Delete a hero by id.
+    """
     hero = get_or_404(session, Hero, hero_id)
 
     session.delete(hero)
