@@ -1,6 +1,7 @@
 from typing import List
 
-from fastapi import Depends, Query
+from fastapi import Depends
+from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Session, select
 
 from app.database import get_or_404, get_session, save_and_refresh
@@ -21,8 +22,8 @@ def create_hero(hero: HeroCreate, session: Session = Depends(get_session)):
 
 @router.get("/", response_model=List[HeroRead])
 def read_heroes(
-    offset: int = 0,
-    limit: int = Query(default=10, lt=11),
+    offset: NonNegativeInt = 0,
+    limit: conint(le=10, gt=0) = 10,
     session: Session = Depends(get_session),
 ):
     """
@@ -37,7 +38,7 @@ def read_heroes(
     response_model=HeroRead,
     responses={404: {"description": "Hero Not found"}},
 )
-def read_hero(hero_id: int, session: Session = Depends(get_session)):
+def read_hero(hero_id: PositiveInt, session: Session = Depends(get_session)):
     """
     Read a hero by id.
     """
@@ -51,7 +52,7 @@ def read_hero(hero_id: int, session: Session = Depends(get_session)):
     responses={404: {"description": "Hero Not found"}},
 )
 def update_hero(
-    hero_id: int, hero: HeroUpdate, session: Session = Depends(get_session)
+    hero_id: PositiveInt, hero: HeroUpdate, session: Session = Depends(get_session)
 ):
     """
     Update a hero by id.
@@ -69,7 +70,7 @@ def update_hero(
 
 
 @router.delete("/{hero_id}", responses={404: {"description": "Hero Not found"}})
-def delete_hero(hero_id: int, session: Session = Depends(get_session)):
+def delete_hero(hero_id: PositiveInt, session: Session = Depends(get_session)):
     """
     Delete a hero by id.
     """

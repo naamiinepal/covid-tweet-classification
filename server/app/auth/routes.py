@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
+
 from app.database import get_session, save_and_refresh
 
 from . import router
@@ -9,10 +10,10 @@ from .helper_functions import (
     create_access_token_from_username,
     get_current_user,
     get_password_hash,
-    oauth2_scheme,
     get_user,
+    oauth2_scheme,
 )
-from .models import Token, UserCreate, UserRead, User, UserUpdate
+from .models import Token, User, UserCreate, UserRead, UserUpdate
 
 
 @router.get(

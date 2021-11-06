@@ -1,5 +1,6 @@
 from typing import Optional
 
+from pydantic import PositiveInt
 from sqlmodel import Field, SQLModel
 
 # Data Models
@@ -12,7 +13,7 @@ class HeroCreate(SQLModel):
 
     name: str
     secret_name: str
-    age: Optional[int] = None
+    age: Optional[PositiveInt] = None
 
 
 class HeroRead(HeroCreate):
@@ -20,7 +21,7 @@ class HeroRead(HeroCreate):
     Data Model for Hero Read
     """
 
-    id: int
+    id: PositiveInt
 
 
 class HeroUpdate(SQLModel):
@@ -30,7 +31,7 @@ class HeroUpdate(SQLModel):
 
     name: Optional[str] = None
     secret_name: Optional[str] = None
-    age: Optional[int] = None
+    age: Optional[PositiveInt] = None
 
 
 # Table Models
@@ -41,4 +42,4 @@ class Hero(HeroCreate, table=True):
     Table Model for Hero
     """
 
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[PositiveInt] = Field(default=None, primary_key=True)
