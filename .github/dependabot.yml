@@ -6,6 +6,6 @@
 version: 2
 updates:
   - package-ecosystem: "pip" # See documentation for possible values
-    directory: "server/" # Location of package manifests
+    directory: "/server" # Location of package manifests
     schedule:
       interval: "daily"
