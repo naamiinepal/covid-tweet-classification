@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 
 from pydantic import PositiveInt
@@ -21,3 +21,16 @@ class Tweet(SQLModel, table=True):
     life_during_pandemic: bool
     covid_waves_and_variants: bool
     misinformation: bool
+
+
+class Overview(SQLModel):
+    covid_stats: int
+    vaccination: int
+    covid_politics: int
+    humour: int
+    lockdown: int
+    civic_views: int
+    life_during_pandemic: int
+    covid_waves_and_variants: int
+    misinformation: int
+    created_at: date
