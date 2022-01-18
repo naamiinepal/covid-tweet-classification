@@ -17,21 +17,21 @@ def get_overview(session: Session = Depends(get_session)):
     """
     Get overview by grouping on created_at
     """
+
+    def get_overview_row(column: str):
+        return func.sum(cast(getattr(Tweet, column), Integer)).label(column)
+
     tweets = session.exec(
         select(
-            func.sum(cast(Tweet.covid_stats, Integer)).label("covid_stats"),
-            func.sum(cast(Tweet.vaccination, Integer)).label("vaccination"),
-            func.sum(cast(Tweet.covid_politics, Integer)).label("covid_politics"),
-            func.sum(cast(Tweet.humour, Integer)).label("humour"),
-            func.sum(cast(Tweet.lockdown, Integer)).label("lockdown"),
-            func.sum(cast(Tweet.civic_views, Integer)).label("civic_views"),
-            func.sum(cast(Tweet.life_during_pandemic, Integer)).label(
-                "life_during_pandemic"
-            ),
-            func.sum(cast(Tweet.covid_waves_and_variants, Integer)).label(
-                "covid_waves_and_variants"
-            ),
-            func.sum(cast(Tweet.misinformation, Integer)).label("misinformation"),
+            get_overview_row("covid_stats"),
+            get_overview_row("vaccination"),
+            get_overview_row("covid_politics"),
+            get_overview_row("humour"),
+            get_overview_row("lockdown"),
+            get_overview_row("civic_views"),
+            get_overview_row("life_during_pandemic"),
+            get_overview_row("covid_waves_and_variants"),
+            get_overview_row("misinformation"),
             Tweet.created_at,
         ).group_by(func.strftime("%Y-%m-%d", Tweet.created_at))
     ).all()
