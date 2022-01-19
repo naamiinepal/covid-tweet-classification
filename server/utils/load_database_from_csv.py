@@ -13,5 +13,5 @@ with open("utils/nepali_tweets_dataset_vectors_EHnM_analysis_v2.csv") as csvfile
         tweets.append(Tweet(**kwargs))
 
     session = next(get_session())
-    session.add_all(tweets)
+    session.bulk_save_objects(tweets)
     session.commit()
