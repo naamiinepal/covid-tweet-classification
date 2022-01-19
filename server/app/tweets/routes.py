@@ -1,12 +1,10 @@
 from typing import List
 
-from pydantic import conint, NonNegativeInt, PositiveInt
-
 from fastapi import Depends
+from pydantic import NonNegativeInt, PositiveInt, conint
+from sqlmodel import Integer, Session, cast, func, select
 
-from sqlmodel import Session, select, func, cast, Integer
-
-from app.database import get_session, get_or_404
+from app.database import get_or_404, get_session
 
 from . import router
 from .models import Overview, Tweet
