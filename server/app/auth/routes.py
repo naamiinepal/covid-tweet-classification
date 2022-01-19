@@ -11,20 +11,8 @@ from .helper_functions import (
     get_current_user,
     get_password_hash,
     get_user,
-    oauth2_scheme,
 )
 from .models import Token, User, UserCreate, UserRead, UserUpdate
-
-
-@router.get(
-    "/items",
-    responses={401: {"description": "User Not Authenticated"}},
-)
-async def get_items(token: str = Depends(oauth2_scheme)):
-    """
-    Get all items after authentication
-    """
-    return {"token": token}
 
 
 @router.get(

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, PositiveInt, SecretStr, constr
+from pydantic import BaseModel, EmailStr, PositiveInt, constr
 from sqlmodel import Field, SQLModel
 
 # Data Models
@@ -32,7 +32,7 @@ class UserCreate(UserBase):
     User create model
     """
 
-    password: SecretStr
+    password: str
 
 
 class UserRead(UserBase):
@@ -50,7 +50,7 @@ class UserUpdate(SQLModel):
 
     email: Optional[EmailStr] = None
     full_name: Optional[str] = None
-    password: Optional[SecretStr] = None
+    password: Optional[str] = None
 
 
 # Table Models
