@@ -4,10 +4,11 @@ import { DataGrid } from '@mui/x-data-grid';
 import React, { Component, useEffect, useState } from 'react';
 import { CSVReader } from 'react-papaparse';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import axios from 'axios';
 const buttonRef = React.createRef();
 
 
-const CSVReader1 = () => {
+const TweetCollection = () => {
   const [dataList, setDataList] = useState([])
   const [selectedRow, setSelectedRow] = useState(undefined)
   const [modalDisplay, setModalDisplay] = useState(false)
@@ -63,111 +64,14 @@ const CSVReader1 = () => {
         "headerName": "others"
     }
 ]
-  const handleOpenDialog = (e) => {
-    // Note that the ref is set async, so it might be null at some point
-    if (buttonRef.current) {
-      buttonRef.current.open(e);
-    }
-  };
+  useEffect(()=>{
+    axios.get(`/tweets/?offset=1&limit=10`).then((data)=>data.data).then((data)=>setDataList(data))
+  },[])
 
-  const handleOnFileLoad = (data) => {
-    console.log('---------------------------');
-    let dictData = data.slice(1).map((datum,index) => {return {
-      id:index,
-      text:datum.data[0],
-      covid_stats:datum.data[1],
-      vaccination:datum.data[2],
-      covid_politics:datum.data[3],
-      humour:datum.data[4],
-      lockdown:datum.data[5],
-      civic_views:datum.data[6],
-      life_during_pandemic:datum.data[7],
-      covid_waves_and_variants:datum.data[8],
-      misinformation:datum.data[9],
-      others:datum.data[10],
-
-    }})
-    setDataList(dictData)
-    console.log(data)
-    console.log('---------------------------');
-  };
-
-  const handleOnError = (err, file, inputElem, reason) => {
-    console.log('---------------------------');
-    console.log(err);
-    console.log('---------------------------');
-  };
-
-  const handleOnRemoveFile = (data) => {
-    console.log('---------------------------');
-    console.log(data);
-    console.log('---------------------------');
-  };
-
-  const handleRemoveFile = (e) => {
-    // Note that the ref is set async, so it might be null at some point
-    if (buttonRef.current) {
-      buttonRef.current.removeFile(e);
-    }
-  };
   return (
     <div>
       {/* <h5>Basic Upload</h5> */}
-        <CSVReader
-          ref={buttonRef}
-          onFileLoad={handleOnFileLoad}
-          onError={handleOnError}
-          noClick
-          noDrag
-          onRemoveFile={handleOnRemoveFile}
-        >
-          {({ file }) => (
-            <aside
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                marginBottom: 10,
-              }}
-            >
-              <button
-                type="button"
-                onClick={handleOpenDialog}
-                style={{
-                  marginLeft:"60px"
-                }}
-              >
-<FileUploadIcon/>              </button>
-              {/* <div
-                style={{
-                  borderWidth: 1,
-                  borderStyle: 'solid',
-                  borderColor: '#ccc',
-                  height: 45,
-                  lineHeight: 2.5,
-                  marginTop: 5,
-                  marginBottom: 5,
-                  paddingLeft: 13,
-                  paddingTop: 3,
-                  width: '60%',
-                }}
-              >
-                {file && file.name}
-              </div>
-              <button
-                style={{
-                  borderRadius: 0,
-                  marginLeft: 0,
-                  marginRight: 0,
-                  paddingLeft: 20,
-                  paddingRight: 20,
-                }}
-                onClick={handleRemoveFile}
-              >
-                Remove
-              </button> */}
-            </aside>
-          )}
-        </CSVReader>
+       
         <Modal
         open={modalDisplay}
         onClose={()=>setModalDisplay(false)}
@@ -185,7 +89,7 @@ const CSVReader1 = () => {
   p: 4,}}>
     <Typography id="modal-modal-description" >
             {selectedRow && Object.keys(selectedRow).map((rowElement)=>{
-              if(selectedRow[rowElement]==="1"){
+              if(selectedRow[rowElement]==true){
                 return (<Chip className='mr-1' label={rowElement} color='success' />)
               }else{
                 return <></>
@@ -218,5 +122,5 @@ const CSVReader1 = () => {
   )
 }
 
-export default CSVReader1
+export default TweetCollection
 

@@ -16,6 +16,7 @@
     "@types/node": "^16.11.12",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
+    "axios": "^0.25.0",
     "chart.js": "^3.7.0",
     "react": "^17.0.2",
     "react-chartjs-2": "^4.0.0",
@@ -25,6 +26,9 @@
     "typescript": "^4.5.2",
     "web-vitals": "^1.0.1"
   },
+  "proxy": "http://127.0.0.1:8000",
+
+
   "scripts": {
     "start": "craco start",
     "build": "craco build",

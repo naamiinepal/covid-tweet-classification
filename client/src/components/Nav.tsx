@@ -30,7 +30,6 @@ const Nav = () => {
             <Corona />
             </div>
             <Name />
-            
             <div className='ml-auto'>
               <SearchIcon />
               <InputBase  placeholder="Search…"

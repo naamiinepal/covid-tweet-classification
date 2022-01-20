@@ -1,6 +1,6 @@
 // import './App.css';
 import React from 'react';
-import CSVReader1 from './components/CSVReader';
+import TweetCollection from './components/CSVReader';
 import { LineChart } from './components/LineChart';
 import Nav from './components/Nav';
 import Purpose from './components/Purpose';
@@ -12,7 +12,7 @@ function App() {
       <div className='mt-3'>
       <Purpose />
       <LineChart />
-      <CSVReader1 />
+      <TweetCollection />
 
       </div>
       
