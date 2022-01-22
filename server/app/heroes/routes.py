@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Session, select
 
@@ -49,7 +49,10 @@ def read_hero(hero_id: PositiveInt, session: Session = Depends(get_session)):
 @router.patch(
     "/{hero_id}",
     response_model=HeroRead,
-    responses={404: {"description": "Hero Not found"}},
+    responses={
+        404: {"description": "Hero Not found"},
+        400: {"description": "No Valid Data to Update"},
+    },
 )
 def update_hero(
     hero_id: PositiveInt, hero: HeroUpdate, session: Session = Depends(get_session)
@@ -57,10 +60,13 @@ def update_hero(
     """
     Update a hero by id.
     """
-    db_hero = get_or_404(session, Hero, hero_id)
-
     # Exclude the ones not sent by the client
     hero_data = hero.dict(exclude_unset=True)
+
+    if len(hero_data) == 0:
+        raise HTTPException(status_code=400, detail="No Valid Data to Update")
+
+    db_hero = get_or_404(session, Hero, hero_id)
 
     for key, value in hero_data.items():
         setattr(db_hero, key, value)

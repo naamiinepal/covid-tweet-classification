@@ -1,13 +1,16 @@
+from datetime import datetime, timezone
 from typing import List
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Integer, Session, cast, func, select
 
-from app.database import get_or_404, get_session
+from app.auth.helper_functions import get_current_user
+from app.auth.models import User
+from app.database import get_or_404, get_session, save_and_refresh
 
 from . import router
-from .models import Overview, Tweet
+from .models import Overview, Tweet, TweetUpdate
 
 
 @router.get("/overview", response_model=List[Overview])
@@ -60,3 +63,39 @@ def read_tweet(tweet_id: PositiveInt, session: Session = Depends(get_session)):
     """
     tweet = get_or_404(session, Tweet, tweet_id)
     return tweet
+
+
+@router.patch(
+    "/{tweet_id}",
+    response_model=Tweet,
+    responses={
+        404: {"description": "Tweet Not found"},
+        400: {"description": "No Valid Data to Update"},
+    },
+)
+def update_tweet(
+    tweet_id: PositiveInt,
+    tweet: TweetUpdate,
+    db_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    """
+    Update a tweet by id.
+    """
+
+    # Exclude the nones
+    tweet_data = tweet.dict(exclude_none=True)
+
+    if len(tweet_data) == 0:
+        raise HTTPException(status_code=400, detail="No Valid Data to Update")
+
+    db_tweet = get_or_404(session, Tweet, tweet_id)
+
+    for key, value in tweet_data.items():
+        setattr(db_tweet, key, value)
+
+    db_tweet.modified_at = datetime.now(timezone.utc)
+    db_tweet.modifier = db_user
+
+    save_and_refresh(session, db_tweet)
+    return db_tweet
