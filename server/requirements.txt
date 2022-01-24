@@ -1,7 +1,7 @@
 anyio==3.5.0
 argon2-cffi==21.3.0
 argon2-cffi-bindings==21.2.0
-asgiref==3.4.1
+asgiref==3.5.0
 cffi==1.15.0
 click==8.0.3
 dnspython==2.2.0
