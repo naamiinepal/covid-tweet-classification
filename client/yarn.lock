@@ -9706,10 +9706,10 @@ react-is@^17.0.1, react-is@^17.0.2:
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
-react-papaparse@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/react-papaparse/-/react-papaparse-4.0.1.tgz#962f26f3587e56511ae3bf9467099d579b323b36"
-  integrity sha512-nD5Wuk520hkAi/2w6i0/9p9dTDRkVtAg7Cb/DqXneuBCkAlTbCnS9RvL+TmS5pbYUdBD3jtNG44oJslcC2pVYw==
+react-papaparse@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/react-papaparse/-/react-papaparse-4.0.2.tgz#d00ca0acad3b86c40ad7a800b357ab3680ec029f"
+  integrity sha512-epMdLfJgDcD7tpau897HiRY8vU2Zr6+MCnxo1di1lA+xpri8L/hQAy7ehSBTCVMvUt/O9LgB5Wx3VT9R6Bg2lg==
   dependencies:
     "@types/papaparse" "^5.3.1"
     papaparse "^5.3.1"
