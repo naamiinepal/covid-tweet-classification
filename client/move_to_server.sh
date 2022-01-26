@@ -1,4 +1,4 @@
-#! /bin/zsh
+#! /bin/sh
 
 SERVER_DIR="../server"
 STATIC_DIR="$SERVER_DIR/static"
