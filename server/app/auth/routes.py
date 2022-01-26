@@ -20,7 +20,7 @@ from .models import Token, User, UserCreate, UserRead, UserUpdate
     response_model=UserRead,
     responses={401: {"description": "Authentication Error"}},
 )
-async def get_users_me(current_user: UserRead = Depends(get_current_user)):
+async def get_users_me(current_user: User = Depends(get_current_user)):
     """
     Get current user
     """
@@ -90,7 +90,7 @@ def update(
     Update current user
     """
 
-    # Exclude the ones not sent by client
+    # Exclude the nones
     user_dict = user.dict(exclude_none=True)
 
     if len(user_dict) == 0:

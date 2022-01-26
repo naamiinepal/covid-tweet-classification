@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, PositiveInt, constr
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 # Data Models
 
@@ -57,5 +57,11 @@ class UserUpdate(SQLModel):
 
 
 class User(UserBase, table=True):
+
     id: Optional[PositiveInt] = Field(default=None, primary_key=True)
     hashed_password: str
+
+    tweets: List["Tweet"] = Relationship(back_populates="modifier")
+
+
+# from app.tweets.models import Tweet

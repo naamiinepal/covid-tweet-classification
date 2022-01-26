@@ -3,17 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^6.4.2",
+    "@craco/craco": "^6.4.3",
     "@emotion/react": "^11.7.0",
     "@emotion/styled": "^11.6.0",
-    "@mui/icons-material": "^5.2.1",
-    "@mui/material": "^5.2.3",
-    "@mui/x-data-grid": "^5.2.0",
+    "@mui/icons-material": "^5.3.1",
+    "@mui/material": "^5.3.1",
+    "@mui/x-data-grid": "^5.3.0",
     "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^27.0.3",
-    "@types/node": "^16.11.12",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.4.0",
+    "@types/node": "^17.0.12",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
     "axios": "^0.25.0",
@@ -21,10 +21,10 @@
     "react": "^17.0.2",
     "react-chartjs-2": "^4.0.0",
     "react-dom": "^17.0.2",
-    "react-papaparse": "^3.18.1",
+    "react-papaparse": "^4.0.2",
     "react-scripts": "4.0.3",
-    "typescript": "^4.5.2",
-    "web-vitals": "^1.0.1"
+    "typescript": "^4.5.5",
+    "web-vitals": "^2.1.4"
   },
   "proxy": "http://127.0.0.1:8000",
 
@@ -32,6 +32,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "build-to-server": "craco build && ./move_to_server.sh",
     "test": "craco test",
     "eject": "react-scripts eject"
   },
@@ -54,8 +55,8 @@
     ]
   },
   "devDependencies": {
-    "autoprefixer": "^9.8.8",
-    "postcss": "^7.0.39",
+    "autoprefixer": "^10.4.2",
+    "postcss": "^8.4.5",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
   }
 }

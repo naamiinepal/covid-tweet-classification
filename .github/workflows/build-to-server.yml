@@ -1,0 +1,38 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: React Move Build to Server
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    types: [ closed ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: client/
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js LTS
+      uses: actions/setup-node@v2
+      with:
+        node-version: lts/gallium
+        cache: 'yarn'
+        cache-dependency-path: client/
+    - name: Install dependencies
+      run: yarn install
+    - name: Build and move to server
+      run: yarn build-to-server
+    - name: Git Auto Commit
+      uses: stefanzweifel/git-auto-commit-action@v4.13.1
+      with:
+        commit_message: Update React Build
