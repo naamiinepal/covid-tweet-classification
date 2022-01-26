@@ -22,6 +22,8 @@ jobs:
       with:
         node-version: lts/gallium
         cache: 'yarn'
+    - name: Move inside client
+      run: cd client/
     - name: Instal dependencies
       run: yarn install
     - name: Build and move to server
