@@ -1,0 +1,1 @@
+export let baseAddress = "http://localhost:8000"
