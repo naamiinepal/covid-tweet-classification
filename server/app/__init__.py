@@ -27,13 +27,14 @@ app.include_router(auth_router)
 app.include_router(heroes_router)
 app.include_router(tweets_router)
 
-# Directory to serve root files
-files_dir = "templates"
+
+async def get_actual_path(filename: str):
+    return os.path.join("templates", filename)
 
 
 @app.get("/{file_path:path}", response_class=FileResponse)
 async def index(file_path: str):
-    actual_path = os.path.join(files_dir, file_path)
+    actual_path = await get_actual_path(file_path)
     if os.path.isfile(actual_path):
         return actual_path
-    return os.path.join(files_dir, "index.html")
+    return await get_actual_path("index.html")
