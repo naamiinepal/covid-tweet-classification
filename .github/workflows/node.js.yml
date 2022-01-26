@@ -15,10 +15,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        shell: bash
+        working-directory: client/
+
     steps:
     - uses: actions/checkout@v2
-    - name: Move inside client
-      run: cd client/
     - name: Use Node.js LTS
       uses: actions/setup-node@v2
       with:
