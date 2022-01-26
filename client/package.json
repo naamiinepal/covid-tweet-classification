@@ -28,6 +28,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "build-to-server": "craco build && ./move_to_server.sh",
     "test": "craco test",
     "eject": "react-scripts eject"
   },
