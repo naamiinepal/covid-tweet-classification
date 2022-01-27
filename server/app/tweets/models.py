@@ -1,8 +1,8 @@
 from datetime import date, datetime
 from typing import TYPE_CHECKING, Optional
 
-from pydantic import PositiveInt
-from sqlmodel import Field, Relationship, SQLModel
+from pydantic import BaseModel, PositiveInt
+from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
 if TYPE_CHECKING:
     from app.auth.models import User
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 # Data Models
 
 
-class Overview(SQLModel):
+class Overview(BaseModel):
     covid_stats: int
     vaccination: int
     covid_politics: int
@@ -23,7 +23,7 @@ class Overview(SQLModel):
     created_at: date
 
 
-class TweetUpdate(SQLModel):
+class TweetUpdate(BaseModel):
     text: Optional[str] = None
     covid_stats: Optional[bool] = None
     vaccination: Optional[bool] = None
@@ -37,6 +37,9 @@ class TweetUpdate(SQLModel):
 
 
 class TweetBase(SQLModel):
+
+    __table_args__ = (UniqueConstraint("username"),)
+
     id: Optional[PositiveInt] = Field(default=None, primary_key=True)
     text: str
     username: str

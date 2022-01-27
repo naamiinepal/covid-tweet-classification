@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import PositiveInt
+from pydantic import BaseModel, PositiveInt
 from sqlmodel import Field, SQLModel
 
 # Data Models
@@ -24,7 +24,7 @@ class HeroRead(HeroCreate):
     id: PositiveInt
 
 
-class HeroUpdate(SQLModel):
+class HeroUpdate(BaseModel):
     """
     Data Model for Hero Update
     """

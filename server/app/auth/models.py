@@ -46,7 +46,7 @@ class UserRead(UserBase):
     id: PositiveInt
 
 
-class UserUpdate(SQLModel):
+class UserUpdate(BaseModel):
     """
     User update model
     """
