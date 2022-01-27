@@ -10,5 +10,5 @@ cp build/* $TEMPLATES_DIR/
 
 # Load static files
 [ ! -d $STATIC_DIR ] && mkdir $STATIC_DIR
-rm -r $STATIC_DIR/{css,js}
+rm -r $STATIC_DIR/css $STATIC_DIR/js
 cp -r build/static/* $STATIC_DIR/
