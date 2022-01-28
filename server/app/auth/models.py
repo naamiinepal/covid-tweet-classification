@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List, Optional
 
 from pydantic import BaseModel, EmailStr, PositiveInt, constr
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
 # Data Models
 
@@ -22,6 +22,8 @@ class UserBase(SQLModel):
     """
     Base user model
     """
+
+    __table_args__ = (UniqueConstraint("username"),)
 
     username: constr(
         strip_whitespace=True, to_lower=True, min_length=4, max_length=20

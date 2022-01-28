@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING, Optional
 
 from pydantic import BaseModel, PositiveInt
-from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from app.auth.models import User
@@ -37,9 +37,6 @@ class TweetUpdate(BaseModel):
 
 
 class TweetBase(SQLModel):
-
-    __table_args__ = (UniqueConstraint("username"),)
-
     id: Optional[PositiveInt] = Field(default=None, primary_key=True)
     text: str
     username: str
