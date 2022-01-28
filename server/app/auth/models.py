@@ -23,12 +23,10 @@ class UserBase(SQLModel):
     Base user model
     """
 
-    __table_args__ = (UniqueConstraint("username"),)
+    __table_args__ = (UniqueConstraint("username"), UniqueConstraint("email"))
 
-    username: constr(
-        strip_whitespace=True, to_lower=True, min_length=4, max_length=20
-    ) = Field(index=True)
-    email: Optional[EmailStr] = None
+    username: constr(strip_whitespace=True, to_lower=True, min_length=4, max_length=20)
+    email: EmailStr
     full_name: str
 
 
