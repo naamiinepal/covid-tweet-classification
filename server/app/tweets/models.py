@@ -19,7 +19,6 @@ class Overview(BaseModel):
     civic_views: int
     life_during_pandemic: int
     covid_waves_and_variants: int
-    misinformation: int
     created_at: date
 
 
@@ -33,7 +32,6 @@ class TweetUpdate(BaseModel):
     civic_views: Optional[bool] = None
     life_during_pandemic: Optional[bool] = None
     covid_waves_and_variants: Optional[bool] = None
-    misinformation: Optional[bool] = None
 
 
 class TweetBase(SQLModel):
@@ -49,7 +47,6 @@ class TweetBase(SQLModel):
     civic_views: bool
     life_during_pandemic: bool
     covid_waves_and_variants: bool
-    misinformation: bool
 
 
 # Table Models

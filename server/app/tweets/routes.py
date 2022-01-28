@@ -32,7 +32,6 @@ def get_overview(session: Session = Depends(get_session)):
             get_overview_row("civic_views"),
             get_overview_row("life_during_pandemic"),
             get_overview_row("covid_waves_and_variants"),
-            get_overview_row("misinformation"),
             Tweet.created_at,
         ).group_by(func.strftime("%Y-%m-%d", Tweet.created_at))
     ).all()
