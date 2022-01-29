@@ -23,7 +23,6 @@ class Overview(BaseModel):
 
 
 class TweetUpdate(BaseModel):
-    text: Optional[str] = None
     covid_stats: Optional[bool] = None
     vaccination: Optional[bool] = None
     covid_politics: Optional[bool] = None
