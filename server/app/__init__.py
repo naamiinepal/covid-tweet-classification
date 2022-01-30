@@ -6,7 +6,6 @@ from fastapi.staticfiles import StaticFiles
 
 # Mount routers before database to read their database models
 from .auth import router as auth_router
-from .heroes import router as heroes_router
 from .tweets import router as tweets_router
 
 from .database import create_tables  # isort: skip
@@ -23,9 +22,7 @@ def on_startup():
 
 
 # Register API Routers here
-
 app.include_router(auth_router)
-app.include_router(heroes_router)
 app.include_router(tweets_router)
 
 
