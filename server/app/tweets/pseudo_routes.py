@@ -8,13 +8,25 @@ from sqlmodel import Session, select
 from app.auth.helper_functions import get_current_user
 from app.auth.models import User
 from app.database import get_or_404, get_session, save_and_refresh
+from app.tweets.helper_functions import get_all_overview, get_db_overview
 
 from . import router
-from .models import PseudoTweet, Tweet, TweetUpdate
+from .models import Overview, PseudoTweet, Tweet, TweetUpdate
+
+
+@router.get("/pseudo/overview", response_model=List[Overview])
+def get_pseudo_overview(all: bool = False, session: Session = Depends(get_session)):
+    """
+    Get overview by grouping on created_at
+    """
+
+    if all:
+        return get_all_overview(session)
+    return get_db_overview(session, PseudoTweet)
 
 
 @router.get("/pseudo", response_model=List[PseudoTweet])
-def read_tweets(
+def read_pseudo_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
     session: Session = Depends(get_session),
@@ -31,7 +43,9 @@ def read_tweets(
     response_model=PseudoTweet,
     responses={404: {"description": "PseudoTweet Not found"}},
 )
-def read_tweet(pseudo_tweet_id: PositiveInt, session: Session = Depends(get_session)):
+def read_pseudo_tweet(
+    pseudo_tweet_id: PositiveInt, session: Session = Depends(get_session)
+):
     """
     Read a pseudo tweet by id.
     """
@@ -44,7 +58,7 @@ def read_tweet(pseudo_tweet_id: PositiveInt, session: Session = Depends(get_sess
     response_model=Tweet,
     responses={404: {"description": "PseudoTweet Not found"}},
 )
-def verify_tweet(
+def verify_pseudo_tweet(
     pseudo_tweet_id: PositiveInt,
     tweet: TweetUpdate,
     db_user: User = Depends(get_current_user),

@@ -19,7 +19,7 @@ class Overview(BaseModel):
     civic_views: int
     life_during_pandemic: int
     covid_waves_and_variants: int
-    created_at: date
+    created_date: date
 
 
 class TweetUpdate(BaseModel):
