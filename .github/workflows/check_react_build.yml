@@ -26,5 +26,5 @@ jobs:
         cache-dependency-path: client/
     - name: Install dependencies
       run: yarn install
-    - name: Build and move to server
+    - name: Build client
       run: yarn build
