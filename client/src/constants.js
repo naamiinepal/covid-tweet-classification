@@ -1,1 +1,3 @@
-export let baseAddress = "http://localhost:8000"
+const baseAddress = "http://localhost:8000";
+
+export { baseAddress };

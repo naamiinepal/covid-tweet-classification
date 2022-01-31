@@ -1,15 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { StrictMode } from "react";
+import { render } from "react-dom";
 // import './styles/tailwind.css';
-import './index.css';
+import "./index.css";
 
-import App from './App';
+import App from "./App";
 
-ReactDOM.render(
-  <React.StrictMode>
+render(
+  <StrictMode>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </StrictMode>,
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
