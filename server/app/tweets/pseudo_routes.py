@@ -29,12 +29,17 @@ def get_pseudo_overview(all: bool = False, session: Session = Depends(get_sessio
 def read_pseudo_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
+    minority: bool = False,
     session: Session = Depends(get_session),
 ):
     """
     Read pseudo tweets within the offset and limit
     """
-    tweets = session.exec(select(PseudoTweet).offset(offset).limit(limit)).all()
+    selection = select(PseudoTweet)
+    if minority:
+        # The lockdown has the lowest number of true examples for now
+        selection = selection.filter(PseudoTweet.lockdown)
+    tweets = session.exec(selection.offset(offset).limit(limit)).all()
     return tweets
 
 
