@@ -53,10 +53,6 @@ const TweetCollection = () => {
       headerName: "covid_waves_and_variants",
     },
     {
-      field: "misinformation",
-      headerName: "misinformation",
-    },
-    {
       field: "others",
       headerName: "others",
     },

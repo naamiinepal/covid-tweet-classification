@@ -121,12 +121,6 @@ const fetchLabels = async () =>
           borderColor: "rgb(255, 196, 3)",
           backgroundColor: "rgba(255, 196, 3, 0.5)",
         },
-        {
-          label: "Misinformation",
-          data: misinformation,
-          borderColor: "rgb(53, 16, 23)",
-          backgroundColor: "rgba(53, 16, 23, 0.5)",
-        },
       ];
       console.log(finalData);
       return finalData;
@@ -150,7 +144,6 @@ function LineChart() {
       "Civic Views",
       "Life During Pandemic",
       "Covid Waves and Variants",
-      "Misinformation",
     ];
     fetchLabels().then((label2) => {
       if (label2.labels) {
