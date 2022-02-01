@@ -3,12 +3,14 @@ from typing import Optional, TypeVar
 from fastapi import HTTPException
 from sqlmodel import Session, SQLModel, create_engine
 
-database_url = "sqlite:///db.sqlite3"
+from .config import settings
 
 # The main point is, by ensuring you don't share the same session with more than one
 # request, the code is already safe.
 engine = create_engine(
-    database_url, connect_args={"check_same_thread": False}, echo=True
+    settings.database_url,
+    connect_args={"check_same_thread": False},
+    echo=settings.database_echo,
 )
 
 # Make a Generic Type to get the original type completion back

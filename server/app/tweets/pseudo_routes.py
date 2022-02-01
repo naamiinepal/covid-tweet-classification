@@ -7,6 +7,7 @@ from sqlmodel import Session, select
 
 from app.auth.helper_functions import get_current_user
 from app.auth.models import User
+from app.config import settings
 from app.database import get_or_404, get_session, save_and_refresh
 from app.tweets.helper_functions import get_all_overview, get_db_overview
 
@@ -38,7 +39,7 @@ def read_pseudo_tweets(
     selection = select(PseudoTweet)
     if minority:
         # The lockdown has the lowest number of true examples for now
-        selection = selection.filter(PseudoTweet.lockdown)
+        selection = selection.filter(getattr(PseudoTweet, settings.minority_label))
     tweets = session.exec(selection.offset(offset).limit(limit)).all()
     return tweets
 

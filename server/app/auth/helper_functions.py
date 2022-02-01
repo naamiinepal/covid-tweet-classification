@@ -7,6 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 
+from app.config import settings
 from app.database import get_session
 
 from .models import Token, User
@@ -15,11 +16,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 # Password context
 pwd_context = CryptContext(schemes=["argon2"])
-
-# JWT Config
-JWT_SECRET_KEY = "EKKxDOzlMWZhZFQCQBCBDLY9RKVRctQucr5r"
-JWT_ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 28800  # 20 days
 
 
 def verify_password(plain_password: AnyStr, hashed_password: AnyStr) -> bool:
@@ -57,7 +53,9 @@ def get_current_user(
     )
 
     try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(
+            token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
+        )
     except jwt.InvalidTokenError:
         raise credentials_exception
     else:
@@ -75,14 +73,16 @@ def get_current_user(
 
 def create_access_token(
     to_encode: Mapping[str, Any],
-    expires_delta: timedelta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+    expires_delta: timedelta = timedelta(minutes=settings.access_token_expire_minutes),
 ):
     """
     Create an access token
     """
     expire = datetime.now(timezone.utc) + expires_delta
     encoded_jwt = jwt.encode(
-        {**to_encode, "exp": expire}, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM
+        {**to_encode, "exp": expire},
+        settings.jwt_secret_key,
+        algorithm=settings.jwt_algorithm,
     )
     return encoded_jwt
 
