@@ -19,7 +19,7 @@ pwd_context = CryptContext(schemes=["argon2"])
 # JWT Config
 JWT_SECRET_KEY = "EKKxDOzlMWZhZFQCQBCBDLY9RKVRctQucr5r"
 JWT_ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 28800  # 20 days
 
 
 def verify_password(plain_password: AnyStr, hashed_password: AnyStr) -> bool:
