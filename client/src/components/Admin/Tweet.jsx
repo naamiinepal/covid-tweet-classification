@@ -1,10 +1,16 @@
 import { Button, Checkbox, TableCell, TableRow } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Tweet = ({ row }) => {
   const [changedColumn, setChangedColumn] = useState({ ...row });
-  const [isVerified, setIsVerified] = useState(false);
+  const [isVerified, setIsVerified] = useState(
+    "verified_at" in Object.keys(row)
+  );
+  useEffect(() => {
+    setChangedColumn({ ...row });
+    setIsVerified("verified_at" in Object.keys(row));
+  }, [row]);
   const verifySubmit = () => {
     let toSubmit = {};
     for (const prop in row) {
@@ -54,7 +60,7 @@ const Tweet = ({ row }) => {
         )
         .map((datum) => {
           if (datum === "text")
-            return <TableCell align="right">{`${row[`${datum}`]}`}</TableCell>;
+            return <TableCell align="left">{`${row[`${datum}`]}`}</TableCell>;
           else
             return (
               <TableCell align="right">
