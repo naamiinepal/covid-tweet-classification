@@ -1,5 +1,5 @@
 import DialogTitle from "@mui/material/DialogTitle";
-import { Button, TextField } from "@mui/material";
+import { Button, Card, TextField } from "@mui/material";
 import { useState } from "react";
 import { useAuth } from "./AuthProvider";
 import { useLocation, useNavigate } from "react-router";
@@ -27,32 +27,38 @@ export default function Login() {
   }
 
   return (
-    <div>
-      <DialogTitle>Login</DialogTitle>
-      <TextField
-        id="outlined-number"
-        label="Username"
-        onChange={(event) => {
-          setUsername(event.target.value);
-        }}
-        InputLabelProps={{
-          shrink: true,
-        }}
-      />
-      <TextField
-        id="outlined-number"
-        label="Password"
-        type="password"
-        onChange={(event) => {
-          setPassword(event.target.value);
-        }}
-        InputLabelProps={{
-          shrink: true,
-        }}
-      />
-      <Button variant="contained" onClick={handleSubmit}>
-        Login
-      </Button>
-    </div>
+    <Card className="w-1/3 flex flex-col mx-auto mt-10 p-4 items-center">
+      <DialogTitle>EpiSuS Login</DialogTitle>
+      <div className="my-2">
+        <TextField
+          id="outlined-number"
+          label="Username"
+          onChange={(event) => {
+            setUsername(event.target.value);
+          }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+      </div>
+      <div className="mb-3">
+        <TextField
+          id="outlined-number"
+          label="Password"
+          type="password"
+          onChange={(event) => {
+            setPassword(event.target.value);
+          }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+      </div>
+      <div>
+        <Button variant="contained" onClick={handleSubmit}>
+          Login
+        </Button>
+      </div>
+    </Card>
   );
 }
