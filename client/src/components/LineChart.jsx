@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,7 +26,7 @@ ChartJS.register(
   Legend
 );
 
-export const options = {
+const options = {
   responsive: true,
   plugins: {
     legend: {
@@ -39,7 +39,7 @@ export const options = {
   },
 };
 
-export const optionsPie = {
+const optionsPie = {
   responsive: true,
   plugins: {
     legend: {
@@ -53,33 +53,25 @@ export const optionsPie = {
   },
 };
 
-const fetchLabels = async (month) => {
-  let covid_stats = [];
-  let vaccination = [];
-  let covid_politics = [];
-  let humour = [];
-  let lockdown = [];
-  let civic_views = [];
-  let life_during_pandemic = [];
-  let covid_waves_and_variants = [];
-  let misinformation = [];
-  let finalData = {};
-  return axios
+const fetchLabels = async () =>
+  axios
     .get(`/tweets/overview`)
     .then((data) => data.data)
     .then((data) => {
-      finalData["labels"] = data.map((datum) => datum.created_at);
-      covid_stats = data.map((datum) => datum.covid_stats);
-      vaccination = data.map((datum) => datum.vaccination);
-      covid_politics = data.map((datum) => datum.covid_politics);
-      humour = data.map((datum) => datum.humour);
-      lockdown = data.map((datum) => datum.lockdown);
-      civic_views = data.map((datum) => datum.civic_views);
-      life_during_pandemic = data.map((datum) => datum.life_during_pandemic);
-      covid_waves_and_variants = data.map(
+      const finalData = {};
+      const covid_stats = data.map((datum) => datum.covid_stats);
+      const vaccination = data.map((datum) => datum.vaccination);
+      const covid_politics = data.map((datum) => datum.covid_politics);
+      const humour = data.map((datum) => datum.humour);
+      const lockdown = data.map((datum) => datum.lockdown);
+      const civic_views = data.map((datum) => datum.civic_views);
+      const life_during_pandemic = data.map(
+        (datum) => datum.life_during_pandemic
+      );
+      const covid_waves_and_variants = data.map(
         (datum) => datum.covid_waves_and_variants
       );
-      misinformation = data.map((datum) => datum.misinformation);
+      finalData["labels"] = data.map((datum) => datum.created_date);
       finalData["datasets"] = [
         {
           label: "Covid Stats",
@@ -129,12 +121,6 @@ const fetchLabels = async (month) => {
           borderColor: "rgb(255, 196, 3)",
           backgroundColor: "rgba(255, 196, 3, 0.5)",
         },
-        {
-          label: "Misinformation",
-          data: misinformation,
-          borderColor: "rgb(53, 16, 23)",
-          backgroundColor: "rgba(53, 16, 23, 0.5)",
-        },
       ];
       console.log(finalData);
       return finalData;
@@ -142,8 +128,8 @@ const fetchLabels = async (month) => {
     .catch((error) => {
       console.log(error);
     });
-};
-export function LineChart() {
+
+function LineChart() {
   const [labels, setLabels] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -158,11 +144,10 @@ export function LineChart() {
       "Civic Views",
       "Life During Pandemic",
       "Covid Waves and Variants",
-      "Misinformation",
     ];
     fetchLabels().then((label2) => {
       if (label2.labels) {
-        let dataTemp = label2.datasets.map((datum) =>
+        const dataTemp = label2.datasets.map((datum) =>
           datum.data.reduce((prev, curr) => prev + curr, 0)
         );
         setPieData({
@@ -206,3 +191,6 @@ export function LineChart() {
     </div>
   );
 }
+
+export { options, optionsPie };
+export default LineChart;

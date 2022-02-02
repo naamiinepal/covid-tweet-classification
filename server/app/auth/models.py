@@ -1,9 +1,12 @@
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from pydantic import BaseModel, EmailStr, PositiveInt, constr
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
 # Data Models
+
+if TYPE_CHECKING:
+    from app.tweets.models import Tweet
 
 
 class Token(BaseModel):
@@ -20,10 +23,10 @@ class UserBase(SQLModel):
     Base user model
     """
 
-    username: constr(
-        strip_whitespace=True, to_lower=True, min_length=4, max_length=20
-    ) = Field(index=True)
-    email: Optional[EmailStr] = None
+    __table_args__ = (UniqueConstraint("username"), UniqueConstraint("email"))
+
+    username: constr(strip_whitespace=True, to_lower=True, min_length=4, max_length=20)
+    email: EmailStr
     full_name: str
 
 
@@ -43,7 +46,7 @@ class UserRead(UserBase):
     id: PositiveInt
 
 
-class UserUpdate(SQLModel):
+class UserUpdate(BaseModel):
     """
     User update model
     """
@@ -61,7 +64,11 @@ class User(UserBase, table=True):
     id: Optional[PositiveInt] = Field(default=None, primary_key=True)
     hashed_password: str
 
-    tweets: List["Tweet"] = Relationship(back_populates="modifier")
-
-
-# from app.tweets.models import Tweet
+    modified_tweets: List["Tweet"] = Relationship(
+        back_populates="modifier",
+        sa_relationship_kwargs={"primaryjoin": "User.id==Tweet.modifier_id"},
+    )
+    verified_tweets: List["Tweet"] = Relationship(
+        back_populates="verifier",
+        sa_relationship_kwargs={"primaryjoin": "User.id==Tweet.verifier_id"},
+    )

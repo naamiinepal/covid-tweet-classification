@@ -3,7 +3,6 @@ import { Box } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import { useEffect, useState } from "react";
-// const buttonRef = React.createRef();
 
 const TweetCollection = () => {
   const [dataList, setDataList] = useState([]);
@@ -54,17 +53,13 @@ const TweetCollection = () => {
       headerName: "covid_waves_and_variants",
     },
     {
-      field: "misinformation",
-      headerName: "misinformation",
-    },
-    {
       field: "others",
       headerName: "others",
     },
   ];
   useEffect(() => {
     axios
-      .get(`/tweets/?offset=1&limit=10`)
+      .get("/tweets/?offset=0&limit=10")
       .then((data) => data.data)
       .then((data) => setDataList(data));
   }, []);
@@ -110,7 +105,7 @@ const TweetCollection = () => {
             variant="h5"
             component="h2"
           >
-            {selectedRow && selectedRow.text}
+            {selectedRow?.text}
           </Typography>
         </Box>
       </Modal>

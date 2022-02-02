@@ -3,40 +3,24 @@ from typing import List
 
 from fastapi import Depends, HTTPException
 from pydantic import NonNegativeInt, PositiveInt, conint
-from sqlmodel import Integer, Session, cast, func, select
+from sqlmodel import Session, select
 
 from app.auth.helper_functions import get_current_user
 from app.auth.models import User
 from app.database import get_or_404, get_session, save_and_refresh
+from app.tweets.helper_functions import get_db_overview
 
 from . import router
 from .models import Overview, Tweet, TweetUpdate
 
 
 @router.get("/overview", response_model=List[Overview])
-def get_overview(session: Session = Depends(get_session)):
+def get_tweet_overview(session: Session = Depends(get_session)):
     """
     Get overview by grouping on created_at
     """
 
-    def get_overview_row(column: str):
-        return func.sum(cast(getattr(Tweet, column), Integer)).label(column)
-
-    tweets = session.exec(
-        select(
-            get_overview_row("covid_stats"),
-            get_overview_row("vaccination"),
-            get_overview_row("covid_politics"),
-            get_overview_row("humour"),
-            get_overview_row("lockdown"),
-            get_overview_row("civic_views"),
-            get_overview_row("life_during_pandemic"),
-            get_overview_row("covid_waves_and_variants"),
-            get_overview_row("misinformation"),
-            Tweet.created_at,
-        ).group_by(func.strftime("%Y-%m-%d", Tweet.created_at))
-    ).all()
-    return tweets
+    return get_db_overview(session, Tweet)
 
 
 @router.get("/", response_model=List[Tweet])

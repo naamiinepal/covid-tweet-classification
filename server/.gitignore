@@ -62,8 +62,11 @@ cover/
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
-db.sqlite3-journal
+
+# SQLite and Browser files
+*.sqlite3
+*.sqlite3-journal
+*.sqbpro
 
 # Flask stuff:
 instance/
@@ -148,9 +151,6 @@ cython_debug/
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
-
-# Local History for Visual Studio Code
-.history/
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
