@@ -31,7 +31,7 @@ const TweetCollectionAdminPanel = () => {
     },
     {
       field: "covid_stats",
-      headerName: "covid_stats",
+      headerName: "covid \n stats",
     },
     {
       field: "vaccination",
@@ -39,7 +39,7 @@ const TweetCollectionAdminPanel = () => {
     },
     {
       field: "covid_politics",
-      headerName: "covid_politics",
+      headerName: "covid \n politics",
     },
     {
       field: "humour",
@@ -51,15 +51,15 @@ const TweetCollectionAdminPanel = () => {
     },
     {
       field: "civic_views",
-      headerName: "civic_views",
+      headerName: "civic \n views",
     },
     {
       field: "life_during_pandemic",
-      headerName: "life_during_pandemic",
+      headerName: "life during \npandemic",
     },
     {
       field: "covid_waves_and_variants",
-      headerName: "covid_waves_and_variants",
+      headerName: "covid waves \n and \n variants",
     },
   ];
   useEffect(() => {
@@ -130,7 +130,7 @@ const TweetCollectionAdminPanel = () => {
             <TableRow>
               {columns.map((column, index) => {
                 return (
-                  <TableCell key={index} sx={{ width: 50 }}>
+                  <TableCell key={index} sx={{ width: 50, fontWeight: "bold" }}>
                     {column.headerName}
                   </TableCell>
                 );

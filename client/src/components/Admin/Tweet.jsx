@@ -60,7 +60,11 @@ const Tweet = ({ row }) => {
         )
         .map((datum) => {
           if (datum === "text")
-            return <TableCell align="left">{`${row[`${datum}`]}`}</TableCell>;
+            return (
+              <TableCell sx={{ fontSize: "1rem" }} align="left">{`${
+                row[`${datum}`]
+              }`}</TableCell>
+            );
           else
             return (
               <TableCell align="right">
