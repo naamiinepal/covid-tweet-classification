@@ -6,8 +6,8 @@ name: Test Backend Server
 on:
   push:
     branches: [ main ]
-  paths:
-      - 'server/'
+    paths:
+        - 'server/**'
 
 jobs:
   build:

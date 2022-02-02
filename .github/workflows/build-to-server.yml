@@ -6,8 +6,8 @@ name: React Move Build to Server
 on:
   push:
     branches: [ main ]
-  paths:
-      - 'client/'
+    paths:
+        - 'client/**'
 
 jobs:
   build:
