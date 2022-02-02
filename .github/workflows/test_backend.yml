@@ -31,3 +31,5 @@ jobs:
         pip install -r requirements.txt
     - name: Test FastAPI
       run: pytest app/test
+      env:
+        JWT_SECRET_KEY: $GITHUB_SHA

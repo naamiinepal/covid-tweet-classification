@@ -32,4 +32,4 @@ jobs:
     - name: Git Auto Commit
       uses: stefanzweifel/git-auto-commit-action@v4.13.1
       with:
-        commit_message: Update React Build
+        commit_message: "Update React Build: $GITHUB_SHA"
