@@ -38,4 +38,4 @@ async def index(file_path: str):
     actual_path = get_actual_path(file_path)
     if os.path.isfile(actual_path):
         return actual_path
-    return await get_actual_path("index.html")
+    return get_actual_path("index.html")
