@@ -1,3 +1,4 @@
+from functools import lru_cache
 import os.path
 
 from fastapi import FastAPI
@@ -26,13 +27,15 @@ app.include_router(auth_router)
 app.include_router(tweets_router)
 
 
-async def get_actual_path(filename: str):
+# Cache the output for maximum 10 items
+@lru_cache(maxsize=10)
+def get_actual_path(filename: str):
     return os.path.join("templates", filename)
 
 
 @app.get("/{file_path:path}", response_class=FileResponse)
 async def index(file_path: str):
-    actual_path = await get_actual_path(file_path)
+    actual_path = get_actual_path(file_path)
     if os.path.isfile(actual_path):
         return actual_path
     return await get_actual_path("index.html")
