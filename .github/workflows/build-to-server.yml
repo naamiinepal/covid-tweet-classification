@@ -14,7 +14,6 @@ jobs:
 
     defaults:
       run:
-        shell: bash
         working-directory: client/
 
     steps:
@@ -32,4 +31,4 @@ jobs:
     - name: Git Auto Commit
       uses: stefanzweifel/git-auto-commit-action@v4.13.1
       with:
-        commit_message: "Update React Build: $GITHUB_SHA"
+        commit_message: "Update React Build: ${{ github.sha }}"
