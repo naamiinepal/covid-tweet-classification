@@ -31,7 +31,7 @@ export default function Login() {
       <DialogTitle>EpiSuS Login</DialogTitle>
       <div className="my-2">
         <TextField
-          id="outlined-number"
+          id="outlined-username"
           label="Username"
           onChange={(event) => {
             setUsername(event.target.value);
@@ -43,7 +43,7 @@ export default function Login() {
       </div>
       <div className="mb-3">
         <TextField
-          id="outlined-number"
+          id="outlined-password"
           label="Password"
           type="password"
           onChange={(event) => {
