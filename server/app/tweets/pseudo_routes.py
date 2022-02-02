@@ -26,7 +26,7 @@ def get_pseudo_overview(all: bool = False, session: Session = Depends(get_sessio
     return get_db_overview(session, PseudoTweet)
 
 
-@router.get("/pseudo", response_model=List[PseudoTweet])
+@router.get("/pseudo/", response_model=List[PseudoTweet])
 def read_pseudo_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
