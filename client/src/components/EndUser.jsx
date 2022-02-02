@@ -1,5 +1,5 @@
 import TweetCollection from "./CSVReader";
-import { LineChart } from "./LineChart";
+import LineChart from "./LineChart";
 import Nav from "./Nav";
 import Purpose from "./Purpose";
 

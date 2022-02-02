@@ -1,7 +1,5 @@
-import SearchIcon from "@mui/icons-material/Search";
 import Corona from "../svgs/corona";
 import Name from "./Name";
-import { InputBase } from "@mui/material";
    
 const Nav = () => {
     return (
