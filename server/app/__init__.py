@@ -1,5 +1,5 @@
-from functools import lru_cache
 import os.path
+from functools import lru_cache
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
