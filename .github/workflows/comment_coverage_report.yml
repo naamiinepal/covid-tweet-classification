@@ -6,6 +6,8 @@ name: Comment Backend Coverage Report
 on:
   pull_request:
     branches: [ main ]
+  paths:
+      - 'server/'
 
 jobs:
   build:
@@ -31,6 +33,6 @@ jobs:
       run: |
         pytest --cov=app test > /pytest-coverage.txt
       env:
-        JWT_SECRET_KEY: $GITHUB_SHA
+        JWT_SECRET_KEY: ${{ github.sha }}
     - name: Comment coverage
       uses: coroo/pytest-coverage-commentator@v1.0.2
