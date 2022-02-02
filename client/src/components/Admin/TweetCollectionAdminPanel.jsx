@@ -64,7 +64,7 @@ const TweetCollectionAdminPanel = () => {
   ];
   useEffect(() => {
     axios
-      .get(`/tweets/pseudo?offset=${offset}&limit=10&minority=${minority}`)
+      .get(`/tweets/pseudo/?offset=${offset}&limit=10&minority=${minority}`)
       .then((data) => data.data)
       .then((data) => {
         console.log(data);
