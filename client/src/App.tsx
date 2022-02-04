@@ -13,7 +13,7 @@ function App() {
      <Route path="/" element={<EndUser />} />
      <Route path="/login" element={<Login />} />
       <Route
-            path="/ap/"
+            path="/ap"
             element={
               <RequireAuth>
                 <Admin />
@@ -25,7 +25,7 @@ function App() {
           element={<TweetCollectionAdminPanel action="modify" />}
         />
         <Route
-          path="*"
+          index
           element={<TweetCollectionAdminPanel action="verify" />}
         />
             </Route>

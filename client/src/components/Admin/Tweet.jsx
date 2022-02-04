@@ -1,16 +1,32 @@
 import { Button, Checkbox, TableCell, TableRow } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { columns } from "../../constants";
 
-const Tweet = ({ row }) => {
+const Tweet = ({ row, verified, action }) => {
   const [changedColumn, setChangedColumn] = useState({ ...row });
-  const [isVerified, setIsVerified] = useState(
-    "verified_at" in Object.keys(row)
-  );
+  const [isVerified, setIsVerified] = useState(verified);
   useEffect(() => {
     setChangedColumn({ ...row });
-    setIsVerified("verified_at" in Object.keys(row));
-  }, [row]);
+    setIsVerified(verified);
+  }, [row, verified]);
+  const modifySubmit = () => {
+    let toSubmit = {};
+    for (const prop in row) {
+      toSubmit[prop] = changedColumn[prop];
+    }
+    let accessToken = sessionStorage.getItem("accessToken");
+    axios
+      .patch(`/tweets/${row.id}`, toSubmit, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((data) => data.data)
+      .then((data) => {
+        setIsVerified(true);
+      });
+  };
   const verifySubmit = () => {
     let toSubmit = {};
     for (const prop in row) {
@@ -19,7 +35,6 @@ const Tweet = ({ row }) => {
       }
     }
     let accessToken = sessionStorage.getItem("accessToken");
-    console.log(accessToken);
     axios
       .patch(`/tweets/pseudo/${row.id}`, toSubmit, {
         headers: {
@@ -43,21 +58,33 @@ const Tweet = ({ row }) => {
       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
     >
       <TableCell align="right">
-        {isVerified ? (
-          <Button color="success" onClick={verifySubmit}>
-            {"Verified"}
-          </Button>
-        ) : (
-          <Button variant="contained" onClick={verifySubmit}>
-            {"Verify"}
-          </Button>
-        )}
+        {
+          (action = "modify" ? (
+            <Button variant="contained" onClick={modifySubmit}>
+              {"Modify"}
+            </Button>
+          ) : (
+            <>
+              {isVerified ? (
+                <Button
+                  color="warning"
+                  // variant="contained"
+                  onClick={verifySubmit}
+                >
+                  {"Verified"}
+                </Button>
+              ) : (
+                <Button variant="contained" onClick={verifySubmit}>
+                  {"Verify"}
+                </Button>
+              )}
+            </>
+          ))
+        }
       </TableCell>
-      {Object.keys(row)
-        .filter(
-          (datum) =>
-            datum !== "created_at" && datum !== "username" && datum !== "id"
-        )
+      {columns
+        .map((column) => column.field)
+        .filter((datum) => datum !== "verify")
         .map((datum, index) => {
           if (datum === "text")
             return (

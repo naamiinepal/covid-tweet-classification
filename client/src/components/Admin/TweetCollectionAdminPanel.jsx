@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { columns } from "../../constants";
 import Tweet from "./Tweet";
 // const buttonRef = React.createRef();
 
@@ -23,45 +24,7 @@ const TweetCollectionAdminPanel = ({ action }) => {
   const [minority, setMinority] = useState(true);
   const [offsetTemp, setOffsetTemp] = useState(offset);
   const [reload, setReload] = useState(true);
-  const columns = [
-    { field: "verify", headerName: "Verify" },
-    {
-      field: "text",
-      headerName: "text",
-    },
-    {
-      field: "covid_stats",
-      headerName: "covid \n stats",
-    },
-    {
-      field: "vaccination",
-      headerName: "vaccination",
-    },
-    {
-      field: "covid_politics",
-      headerName: "covid \n politics",
-    },
-    {
-      field: "humour",
-      headerName: "humour",
-    },
-    {
-      field: "lockdown",
-      headerName: "lockdown",
-    },
-    {
-      field: "civic_views",
-      headerName: "civic \n views",
-    },
-    {
-      field: "life_during_pandemic",
-      headerName: "life during \npandemic",
-    },
-    {
-      field: "covid_waves_and_variants",
-      headerName: "covid waves \n and \n variants",
-    },
-  ];
+
   useEffect(() => {
     axios
       .get(
@@ -74,7 +37,7 @@ const TweetCollectionAdminPanel = ({ action }) => {
         console.log(data);
         setDataList(data);
       });
-  }, [offset, minority, reload]);
+  }, [offset, minority, reload, action]);
 
   return (
     <div className=" mt-10 w-11/12 mx-auto ">
@@ -143,7 +106,12 @@ const TweetCollectionAdminPanel = ({ action }) => {
           </TableHead>
           <TableBody>
             {dataList.map((row, index) => (
-              <Tweet key={index} row={{ ...row }} />
+              <Tweet
+                key={index}
+                row={{ ...row }}
+                action={action}
+                verified={!!row["verified_at"]}
+              />
             ))}
           </TableBody>
         </Table>

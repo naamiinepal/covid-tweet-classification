@@ -1,6 +1,5 @@
-import { Outlet, Route, Routes } from "react-router";
+import { Outlet } from "react-router";
 import Nav from "../Nav";
-import TweetCollectionAdminPanel from "./TweetCollectionAdminPanel";
 
 const Admin = () => {
   return (
