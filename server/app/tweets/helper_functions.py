@@ -1,9 +1,12 @@
+from typing import TypeVar
 from sqlmodel import Integer, Session, func, select, union
+from app.tweets.models import PseudoTweet, Tweet, TweetUpdate
 
-from app.tweets.models import PseudoTweet, Tweet, TweetBase, TweetUpdate
+# Make a Generic Type to get the original type completion back
+ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
 
 
-def get_db_overview(session: Session, model: TweetBase):
+def get_db_overview(session: Session, model: ModelType):
     def get_overview_row(column: str):
         return func.sum(getattr(model, column), type_=Integer).label(column)
 
@@ -18,7 +21,7 @@ def get_db_overview(session: Session, model: TweetBase):
 
 
 def get_all_overview(session: Session):
-    def get_overview_selection(model: TweetBase):
+    def get_overview_selection(model: ModelType):
         def get_model_attr(attr: str):
             return getattr(model, attr)
 
