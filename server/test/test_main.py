@@ -1,6 +1,10 @@
 from glob import glob
 
-from . import client
+from fastapi.testclient import TestClient
+
+from app import app
+
+client = TestClient(app)
 
 
 def test_index():
