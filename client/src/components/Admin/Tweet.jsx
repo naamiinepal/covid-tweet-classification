@@ -58,16 +58,16 @@ const Tweet = ({ row }) => {
           (datum) =>
             datum !== "created_at" && datum !== "username" && datum !== "id"
         )
-        .map((datum) => {
+        .map((datum, index) => {
           if (datum === "text")
             return (
-              <TableCell sx={{ fontSize: "1rem" }} align="left">{`${
+              <TableCell key={index} sx={{ fontSize: "1rem" }} align="left">{`${
                 row[`${datum}`]
               }`}</TableCell>
             );
           else
             return (
-              <TableCell align="right">
+              <TableCell key={index} align="right">
                 <Checkbox
                   checked={changedColumn[`${datum}`]}
                   onChange={(event) => {

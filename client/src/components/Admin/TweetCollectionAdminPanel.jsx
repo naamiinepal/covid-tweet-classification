@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import Tweet from "./Tweet";
 // const buttonRef = React.createRef();
 
-const TweetCollectionAdminPanel = () => {
+const TweetCollectionAdminPanel = ({ action }) => {
   const [dataList, setDataList] = useState([]);
   const [offset, setOffset] = useState(0);
   const [minority, setMinority] = useState(true);
@@ -64,7 +64,11 @@ const TweetCollectionAdminPanel = () => {
   ];
   useEffect(() => {
     axios
-      .get(`/tweets/pseudo/?offset=${offset}&limit=10&minority=${minority}`)
+      .get(
+        `/tweets/${
+          action === "verify" ? `pseudo/` : ""
+        }?offset=${offset}&limit=10&minority=${minority}`
+      )
       .then((data) => data.data)
       .then((data) => {
         console.log(data);
@@ -73,7 +77,7 @@ const TweetCollectionAdminPanel = () => {
   }, [offset, minority, reload]);
 
   return (
-    <div className=" mt-10 w-11/12 mx-auto h-96">
+    <div className=" mt-10 w-11/12 mx-auto ">
       <div className="w-3/12 flex justify-between items-end mb-3">
         <div>
           <InputLabel id="minority">Minority</InputLabel>
