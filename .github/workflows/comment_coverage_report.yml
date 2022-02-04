@@ -31,8 +31,10 @@ jobs:
         pip install -r requirements.txt
     - name: Build coverage file
       run: |
-        pytest --cov=app test > ../pytest-coverage.txt
+        pytest --cov=app test > pytest-coverage.txt
       env:
         JWT_SECRET_KEY: ${{ github.sha }}
     - name: Comment coverage
       uses: coroo/pytest-coverage-commentator@v1.0.2
+      with:
+        pytest-coverage: server/pytest-coverage.txt
