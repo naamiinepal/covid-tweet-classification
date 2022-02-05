@@ -61,7 +61,7 @@ const Tweet = ({ row, verified, action }) => {
         {
           (action = "modify" ? (
             <Button variant="contained" onClick={modifySubmit}>
-              "Modify"
+              Modify
             </Button>
           ) : (
             <>
@@ -71,11 +71,11 @@ const Tweet = ({ row, verified, action }) => {
                   // variant="contained"
                   onClick={verifySubmit}
                 >
-                  "Verified"
+                  Verified
                 </Button>
               ) : (
                 <Button variant="contained" onClick={verifySubmit}>
-                  "Verify"
+                  Verify
                 </Button>
               )}
             </>
@@ -96,7 +96,7 @@ const Tweet = ({ row, verified, action }) => {
             return (
               <TableCell key={index} align="right">
                 <Checkbox
-                  checked={changedColumn[`${datum}`]}
+                  checked={changedColumn[datum]}
                   onChange={(event) => {
                     handleChange(event, datum);
                   }}
