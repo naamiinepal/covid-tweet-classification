@@ -5,15 +5,15 @@ from fastapi import Depends, HTTPException
 from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Session, select
 
-from app.auth.helper_functions import get_current_user
-from app.auth.models import User
-from app.database import get_or_404, get_session, save_and_refresh
-from app.tweets.helper_functions import get_db_overview
-
+from ..auth.helper_functions import get_current_user
+from ..auth.models import User
+from ..database import get_or_404, get_session, save_and_refresh
+from ..tweets_common.helper_functions import get_db_overview
+from ..tweets_common.models import Overview, Tweet, TweetUpdate
 from . import router
-from .models import Overview, Tweet, TweetUpdate
 
 
+# Keep it in the top to avoid clashing with pseudo_tweet_id
 @router.get("/overview", response_model=List[Overview])
 def get_tweet_overview(session: Session = Depends(get_session)):
     """

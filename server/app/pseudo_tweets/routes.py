@@ -5,17 +5,17 @@ from fastapi import Depends
 from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Session, select
 
-from app.auth.helper_functions import get_current_user
-from app.auth.models import User
-from app.config import settings
-from app.database import get_or_404, get_session, save_and_refresh
-from app.tweets.helper_functions import get_all_overview, get_db_overview
-
+from ..auth.helper_functions import get_current_user
+from ..auth.models import User
+from ..config import settings
+from ..database import get_or_404, get_session, save_and_refresh
+from ..tweets_common.helper_functions import get_all_overview, get_db_overview
+from ..tweets_common.models import Overview, PseudoTweet, Tweet, TweetUpdate
 from . import router
-from .models import Overview, PseudoTweet, Tweet, TweetUpdate
 
 
-@router.get("/pseudo/overview", response_model=List[Overview])
+# Keep it in the top to avoid clashing with pseudo_tweet_id
+@router.get("/overview", response_model=List[Overview])
 def get_pseudo_overview(all: bool = False, session: Session = Depends(get_session)):
     """
     Get overview by grouping on created_at
@@ -26,7 +26,7 @@ def get_pseudo_overview(all: bool = False, session: Session = Depends(get_sessio
     return get_db_overview(session, PseudoTweet)
 
 
-@router.get("/pseudo/", response_model=List[PseudoTweet])
+@router.get("/", response_model=List[PseudoTweet])
 def read_pseudo_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
@@ -45,7 +45,7 @@ def read_pseudo_tweets(
 
 
 @router.get(
-    "/pseudo/{pseudo_tweet_id}",
+    "/{pseudo_tweet_id}",
     response_model=PseudoTweet,
     responses={404: {"description": "PseudoTweet Not found"}},
 )
@@ -60,7 +60,7 @@ def read_pseudo_tweet(
 
 
 @router.patch(
-    "/pseudo/{pseudo_tweet_id}",
+    "/{pseudo_tweet_id}",
     response_model=Tweet,
     responses={404: {"description": "PseudoTweet Not found"}},
 )
@@ -98,7 +98,7 @@ def verify_pseudo_tweet(
 
 
 @router.delete(
-    "/pseudo/{pseudo_tweet_id}",
+    "/{pseudo_tweet_id}",
     response_model=PseudoTweet,
     responses={404: {"description": "PseudoTweet Not found"}},
 )
