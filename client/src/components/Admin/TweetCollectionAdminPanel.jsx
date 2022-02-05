@@ -28,8 +28,8 @@ const TweetCollectionAdminPanel = ({ action }) => {
   useEffect(() => {
     axios
       .get(
-        `${action === "verify" ? "pseudo_tweets" : "tweets"}
-          /?offset=${offset}&limit=10&minority=${minority}`
+        `/${action === "verify" ? "pseudo_tweets" : "tweets"
+        }/?offset=${offset}&limit=10&minority=${minority}`
       )
       .then((data) => data.data)
       .then((data) => {
