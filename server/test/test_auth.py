@@ -11,7 +11,7 @@ def test_unauth_get_me(client: TestClient):
 
 
 # Duplicate email check fails for now
-@pytest.mark.xfail(IntegrityError)
+@pytest.mark.xfail(raises=IntegrityError)
 def test_register(client: TestClient):
     response = client.post(
         base_path + "register",
