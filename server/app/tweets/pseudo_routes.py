@@ -95,3 +95,20 @@ def verify_pseudo_tweet(
     # Save verified tweet and refresh it to get the new id
     save_and_refresh(session, verified_tweet)
     return verified_tweet
+
+
+@router.delete(
+    "/pseudo/{pseudo_tweet_id}",
+    response_model=PseudoTweet,
+    responses={404: {"description": "PseudoTweet Not found"}},
+)
+def delete_pseudo_tweet(
+    pseudo_tweet_id: PositiveInt, session: Session = Depends(get_session)
+):
+    """
+    Delete a pseudo tweet by id.
+    """
+    tweet = get_or_404(session, PseudoTweet, pseudo_tweet_id)
+    session.delete(tweet)
+    session.commit()
+    return tweet
