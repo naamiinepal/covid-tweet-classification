@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router';
 import Admin from './components/Admin';
+import TweetCollectionAdminPanel from './components/Admin/TweetCollectionAdminPanel';
 import AuthProvider from './components/AuthProvider';
 import EndUser from './components/EndUser';
 import Login from './components/Login';
@@ -18,7 +19,16 @@ function App() {
                 <Admin />
               </RequireAuth>
             }
-          />
+          >
+            <Route
+          path="modify"
+          element={<TweetCollectionAdminPanel action="modify" />}
+        />
+        <Route
+          index
+          element={<TweetCollectionAdminPanel action="verify" />}
+        />
+            </Route>
    </Routes>
     </AuthProvider>
   );
