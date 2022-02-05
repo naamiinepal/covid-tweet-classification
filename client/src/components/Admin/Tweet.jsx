@@ -36,7 +36,7 @@ const Tweet = ({ row, verified, action }) => {
     }
     let accessToken = sessionStorage.getItem("accessToken");
     axios
-      .patch(`/tweets/pseudo/${row.id}`, toSubmit, {
+      .patch(`/pseudo_tweets/${row.id}`, toSubmit, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -61,7 +61,7 @@ const Tweet = ({ row, verified, action }) => {
         {
           (action = "modify" ? (
             <Button variant="contained" onClick={modifySubmit}>
-              {"Modify"}
+              "Modify"
             </Button>
           ) : (
             <>
@@ -71,11 +71,11 @@ const Tweet = ({ row, verified, action }) => {
                   // variant="contained"
                   onClick={verifySubmit}
                 >
-                  {"Verified"}
+                  "Verified"
                 </Button>
               ) : (
                 <Button variant="contained" onClick={verifySubmit}>
-                  {"Verify"}
+                  "Verify"
                 </Button>
               )}
             </>
