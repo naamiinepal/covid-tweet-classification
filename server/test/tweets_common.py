@@ -2,7 +2,7 @@ from typing import Tuple, TypeVar
 
 from fastapi.testclient import TestClient
 
-from app.tweets.models import PseudoTweet, Tweet
+from app.tweets_common.models import PseudoTweet, Tweet
 
 # Make a Generic Type to get the original type completion back
 ModelType = TypeVar("ModelType", Tweet, PseudoTweet)

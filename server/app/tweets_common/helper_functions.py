@@ -1,6 +1,8 @@
 from typing import TypeVar
+
 from sqlmodel import Integer, Session, func, select, union
-from app.tweets.models import PseudoTweet, Tweet, TweetUpdate
+
+from .models import PseudoTweet, Tweet, TweetUpdate
 
 # Make a Generic Type to get the original type completion back
 ModelType = TypeVar("ModelType", Tweet, PseudoTweet)

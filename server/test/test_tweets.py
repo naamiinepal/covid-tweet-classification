@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
-from test.tweet_common import list_tweets_helper, overview_helper
 from typing import Tuple
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from app.tweets.models import Tweet
+from app.tweets_common.models import Tweet
+
+from .tweets_common import list_tweets_helper, overview_helper
 
 base_path = "/tweets/"
 
