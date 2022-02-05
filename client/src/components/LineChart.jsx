@@ -55,7 +55,7 @@ const optionsPie = {
 
 const fetchLabels = async () =>
   axios
-    .get(`/tweets/overview`)
+    .get(`/tweets/overview?all=True`)
     .then((data) => data.data)
     .then((data) => {
       const finalData = {};

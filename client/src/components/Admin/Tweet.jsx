@@ -1,4 +1,11 @@
-import { Button, Checkbox, TableCell, TableRow } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Snackbar,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { columns } from "../../constants";
@@ -6,6 +13,11 @@ import { columns } from "../../constants";
 const Tweet = ({ row, verified, action }) => {
   const [changedColumn, setChangedColumn] = useState({ ...row });
   const [isVerified, setIsVerified] = useState(verified);
+  const [snackOpen, setSnackOpen] = useState({
+    display: false,
+    message: "",
+    intent: "success",
+  });
   useEffect(() => {
     setChangedColumn({ ...row });
     setIsVerified(verified);
@@ -22,9 +34,19 @@ const Tweet = ({ row, verified, action }) => {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then((data) => data.data)
-      .then((data) => {
-        setIsVerified(true);
+      .then(() => {
+        setSnackOpen({
+          display: true,
+          message: "Successfully Modified",
+          intent: "success",
+        });
+      })
+      .catch(() => {
+        setSnackOpen({
+          display: false,
+          message: "Modification Failed",
+          intent: "error",
+        });
       });
   };
   const verifySubmit = () => {
@@ -41,10 +63,13 @@ const Tweet = ({ row, verified, action }) => {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then((data) => data.data)
-      .then((data) => {
+      .then(() => {
         setIsVerified(true);
       });
+  };
+  const handleClose = () => {
+    console.log("Closed");
+    setSnackOpen({ ...snackOpen, display: false });
   };
   const handleChange = (event, column) => {
     let changeTemp = JSON.parse(JSON.stringify(changedColumn));
@@ -58,29 +83,43 @@ const Tweet = ({ row, verified, action }) => {
       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
     >
       <TableCell align="right">
-        {
-          (action = "modify" ? (
+        {action === "modify" ? (
+          <>
+            <Snackbar
+              open={snackOpen.display}
+              autoHideDuration={3000}
+              onClose={handleClose}
+            >
+              <Alert
+                onClose={handleClose}
+                severity={snackOpen.intent}
+                sx={{ width: "100%" }}
+              >
+                {snackOpen.message}
+              </Alert>
+            </Snackbar>
             <Button variant="contained" onClick={modifySubmit}>
               Modify
             </Button>
-          ) : (
-            <>
-              {isVerified ? (
-                <Button
-                  color="warning"
-                  // variant="contained"
-                  onClick={verifySubmit}
-                >
-                  Verified
-                </Button>
-              ) : (
-                <Button variant="contained" onClick={verifySubmit}>
-                  Verify
-                </Button>
-              )}
-            </>
-          ))
-        }
+          </>
+        ) : (
+          <>
+            {isVerified ? (
+              <Button
+                color="success"
+                disabled={action === "verify" && isVerified}
+                // variant="contained"
+                onClick={verifySubmit}
+              >
+                Verified
+              </Button>
+            ) : (
+              <Button variant="contained" onClick={verifySubmit}>
+                Verify
+              </Button>
+            )}
+          </>
+        )}
       </TableCell>
       {columns
         .map((column) => column.field)
@@ -88,9 +127,9 @@ const Tweet = ({ row, verified, action }) => {
         .map((datum, index) => {
           if (datum === "text")
             return (
-              <TableCell key={index} sx={{ fontSize: "1rem" }} align="left">{`${
-                row[`${datum}`]
-              }`}</TableCell>
+              <TableCell key={index} sx={{ fontSize: "1rem" }} align="left">
+                {row[datum]}
+              </TableCell>
             );
           else
             return (
