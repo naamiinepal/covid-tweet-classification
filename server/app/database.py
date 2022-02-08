@@ -24,24 +24,24 @@ Select.inherit_cache = True
 ModelType = TypeVar("ModelType")
 
 
-def get_or_404(session: Session, model: ModelType, id: int) -> ModelType:
+def get_or_404(session: Session, Model: ModelType, id: int) -> ModelType:
     """
     Get a model by id or raise a 404 error
     """
-    row: Optional[SQLModel] = session.get(model, id)
+    row: Optional[SQLModel] = session.get(Model, id)
     if row is None:
-        raise HTTPException(404, f"{model.__name__} with id: {id} not found.")
+        raise HTTPException(404, f"{Model.__name__} with id: {id} not found.")
     return row
 
 
-def save_and_refresh(session: Session, model: SQLModel, refresh: bool = True):
+def save_and_refresh(session: Session, row: SQLModel, refresh: bool = True):
     """
     Save a model and refresh it to get the latest data
     """
-    session.add(model)
+    session.add(row)
     session.commit()
     if refresh:
-        session.refresh(model)
+        session.refresh(row)
 
 
 def create_tables():

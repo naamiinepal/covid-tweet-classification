@@ -3,13 +3,19 @@ from typing import List
 
 from fastapi import Depends, HTTPException
 from pydantic import NonNegativeInt, PositiveInt, conint
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from ..auth.helper_functions import get_current_user
 from ..auth.models import User
-from ..database import get_or_404, get_session, save_and_refresh
-from ..tweets_common.helper_functions import get_db_overview
-from ..tweets_common.models import Overview, Tweet, TweetUpdate
+from ..database import get_session, save_and_refresh
+from ..tweets_common.helper_functions import (
+    get_a_tweet,
+    get_combined_tweet,
+    get_db_overview,
+    get_scalar_select,
+    make_tweet_read,
+)
+from ..tweets_common.models import Overview, Tweet, TweetRead, TweetUpdate
 from . import router
 
 
@@ -23,7 +29,7 @@ def get_tweet_overview(session: Session = Depends(get_session)):
     return get_db_overview(session, Tweet)
 
 
-@router.get("/", response_model=List[Tweet])
+@router.get("/", response_model=List[TweetRead])
 def read_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
@@ -32,26 +38,28 @@ def read_tweets(
     """
     Read tweets within the offset and limit
     """
-    tweets = session.exec(select(Tweet).offset(offset).limit(limit)).all()
+    tweets = session.exec(get_scalar_select(Tweet).offset(offset).limit(limit)).all()
     return tweets
 
 
 @router.get(
     "/{tweet_id}",
-    response_model=Tweet,
+    response_model=TweetRead,
     responses={404: {"description": "Tweet Not found"}},
 )
 def read_tweet(tweet_id: PositiveInt, session: Session = Depends(get_session)):
     """
     Read a tweet by id.
     """
-    tweet = get_or_404(session, Tweet, tweet_id)
+
+    tweet = get_a_tweet(session, tweet_id, Tweet)
+
     return tweet
 
 
 @router.patch(
     "/{tweet_id}",
-    response_model=Tweet,
+    response_model=TweetRead,
     responses={
         404: {"description": "Tweet Not found"},
         400: {"description": "No Valid Data to Update"},
@@ -73,7 +81,7 @@ def update_tweet(
     if len(tweet_data) == 0:
         raise HTTPException(status_code=400, detail="No Valid Data to Update")
 
-    db_tweet = get_or_404(session, Tweet, tweet_id)
+    db_tweet, others = get_combined_tweet(session, tweet_id, Tweet)
 
     for key, value in tweet_data.items():
         setattr(db_tweet, key, value)
@@ -82,4 +90,4 @@ def update_tweet(
     db_tweet.modifier = db_user
 
     save_and_refresh(session, db_tweet)
-    return db_tweet
+    return make_tweet_read(db_tweet, others)

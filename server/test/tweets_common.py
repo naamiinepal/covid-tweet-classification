@@ -1,11 +1,9 @@
-from typing import Tuple, TypeVar
+from typing import Tuple
 
 from fastapi.testclient import TestClient
 
-from app.tweets_common.models import PseudoTweet, Tweet
-
-# Make a Generic Type to get the original type completion back
-ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
+from app.tweets_common.helper_functions import ModelType
+from app.tweets_common.models import Overview
 
 
 def overview_helper(
@@ -16,7 +14,13 @@ def overview_helper(
 
     response = client.get(base_path + "overview")
     assert response.status_code == 200
-    created_dates = {tweet["created_date"] for tweet in response.json()}
+
+    response_json = response.json()
+    required_keys = Overview.__fields__.keys()
+    for tweet in response_json:
+        assert tweet.keys() == required_keys
+
+    created_dates = {tweet["created_date"] for tweet in response_json}
     tweet1, tweet2 = inserted_tweets
     assert created_dates == {
         get_strftime(tweet1),
