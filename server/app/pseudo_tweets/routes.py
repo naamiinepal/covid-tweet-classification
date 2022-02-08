@@ -3,14 +3,21 @@ from typing import List
 
 from fastapi import Depends
 from pydantic import NonNegativeInt, PositiveInt, conint
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from ..auth.helper_functions import get_current_user
 from ..auth.models import User
 from ..config import settings
-from ..database import get_or_404, get_session, save_and_refresh
-from ..tweets_common.helper_functions import get_all_overview, get_db_overview
-from ..tweets_common.models import Overview, PseudoTweet, Tweet, TweetUpdate
+from ..database import get_session, save_and_refresh
+from ..tweets_common.helper_functions import (
+    get_a_tweet,
+    get_all_overview,
+    get_combined_tweet,
+    get_db_overview,
+    get_scalar_select,
+    make_tweet_read,
+)
+from ..tweets_common.models import Overview, PseudoTweet, Tweet, TweetRead, TweetUpdate
 from . import router
 
 
@@ -26,7 +33,7 @@ def get_pseudo_overview(all: bool = False, session: Session = Depends(get_sessio
     return get_db_overview(session, PseudoTweet)
 
 
-@router.get("/", response_model=List[PseudoTweet])
+@router.get("/", response_model=List[TweetRead])
 def read_pseudo_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
@@ -36,7 +43,7 @@ def read_pseudo_tweets(
     """
     Read pseudo tweets within the offset and limit
     """
-    selection = select(PseudoTweet)
+    selection = get_scalar_select(PseudoTweet)
     if minority:
         # The lockdown has the lowest number of true examples for now
         selection = selection.filter(getattr(PseudoTweet, settings.minority_label))
@@ -46,7 +53,7 @@ def read_pseudo_tweets(
 
 @router.get(
     "/{pseudo_tweet_id}",
-    response_model=PseudoTweet,
+    response_model=TweetRead,
     responses={404: {"description": "PseudoTweet Not found"}},
 )
 def read_pseudo_tweet(
@@ -55,13 +62,14 @@ def read_pseudo_tweet(
     """
     Read a pseudo tweet by id.
     """
-    tweet = get_or_404(session, PseudoTweet, pseudo_tweet_id)
-    return tweet
+    pseudo_tweet = get_a_tweet(session, pseudo_tweet_id, PseudoTweet)
+
+    return pseudo_tweet
 
 
 @router.patch(
     "/{pseudo_tweet_id}",
-    response_model=Tweet,
+    response_model=TweetRead,
     responses={404: {"description": "PseudoTweet Not found"}},
 )
 def verify_pseudo_tweet(
@@ -74,7 +82,7 @@ def verify_pseudo_tweet(
     Verify a pseudo tweet by id.
     """
 
-    db_pseudo_tweet = get_or_404(session, PseudoTweet, pseudo_tweet_id)
+    db_pseudo_tweet, others = get_combined_tweet(session, pseudo_tweet_id, PseudoTweet)
 
     # Exclude the nones
     tweet_data = tweet.dict(exclude_none=True)
@@ -85,7 +93,7 @@ def verify_pseudo_tweet(
             **tweet_data,
             "id": None,  # Let database decide the id of the new row in Tweet
             "verified_at": datetime.now(timezone.utc),
-            "verifier_id": db_user.id,  # Tweet needs the id when forming
+            "verifier": db_user,  # Tweet needs the user when forming
         },
     )
 
@@ -94,12 +102,13 @@ def verify_pseudo_tweet(
 
     # Save verified tweet and refresh it to get the new id
     save_and_refresh(session, verified_tweet)
-    return verified_tweet
+
+    return make_tweet_read(db_pseudo_tweet, others)
 
 
 @router.delete(
     "/{pseudo_tweet_id}",
-    response_model=PseudoTweet,
+    response_model=TweetRead,
     responses={404: {"description": "PseudoTweet Not found"}},
 )
 def delete_pseudo_tweet(
@@ -108,7 +117,9 @@ def delete_pseudo_tweet(
     """
     Delete a pseudo tweet by id.
     """
-    tweet = get_or_404(session, PseudoTweet, pseudo_tweet_id)
-    session.delete(tweet)
+
+    db_pseudo_tweet, others = get_combined_tweet(session, pseudo_tweet_id, PseudoTweet)
+
+    session.delete(db_pseudo_tweet)
     session.commit()
-    return tweet
+    return make_tweet_read(db_pseudo_tweet, others)

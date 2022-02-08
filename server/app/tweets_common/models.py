@@ -19,6 +19,7 @@ class Overview(BaseModel):
     civic_views: int
     life_during_pandemic: int
     covid_waves_and_variants: int
+    others: int
     created_date: date
 
 
@@ -46,6 +47,10 @@ class TweetBase(SQLModel):
     civic_views: bool
     life_during_pandemic: bool
     covid_waves_and_variants: bool
+
+
+class TweetRead(TweetBase):
+    others: bool
 
 
 # Table Models
