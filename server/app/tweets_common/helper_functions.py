@@ -71,8 +71,8 @@ def get_db_overview(session: Session, Model: ModelType):
     return session.exec(
         select(
             *map_tweet_update(get_overview_row),
+            func.sum(others_column, type_=Integer).label("others"),
             created_date,
-            others_column,
         ).group_by(created_date)
     ).all()
 
