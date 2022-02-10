@@ -2,17 +2,12 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, AnyStr, Mapping, Optional
 
 import jwt
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 
 from app.config import settings
-from app.database import get_session
 
 from .models import Token, User
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 # Password context
 pwd_context = CryptContext(schemes=["argon2"])
@@ -40,44 +35,15 @@ def get_user(session: Session, username: str):
     return user
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
-):
-    """
-    Get the current user from the JWT token
-    """
-    credentials_exception = HTTPException(
-        401,
-        detail="Invalid Authentication Credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-    try:
-        payload = jwt.decode(
-            token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
-        )
-    except jwt.InvalidTokenError:
-        raise credentials_exception
-    else:
-        username: Optional[str] = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-
-    user = get_user(session, username)
-
-    if user is None:
-        raise credentials_exception
-
-    return user
-
-
 def create_access_token(
     to_encode: Mapping[str, Any],
-    expires_delta: timedelta = timedelta(minutes=settings.access_token_expire_minutes),
+    expires_delta: Optional[timedelta] = None,
 ):
     """
     Create an access token
     """
+    if expires_delta is None:
+        expires_delta = timedelta(minutes=settings.access_token_expire_minutes)
     expire = datetime.now(timezone.utc) + expires_delta
     encoded_jwt = jwt.encode(
         {**to_encode, "exp": expire},
@@ -87,12 +53,15 @@ def create_access_token(
     return encoded_jwt
 
 
-def create_access_token_from_username(username: str, *args, **kwargs):
+def create_access_token_from_username(
+    username: str,
+    expires_delta: Optional[timedelta] = None,
+):
     """
     Create an access token from a username.
     This is a more specific version of `create_access_token`.
     """
-    token = create_access_token({"sub": username}, *args, **kwargs)
+    token = create_access_token({"sub": username}, expires_delta)
     return Token(access_token=token)
 
 

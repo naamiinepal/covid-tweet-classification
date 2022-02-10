@@ -5,7 +5,7 @@ from fastapi import Depends
 from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Session
 
-from ..auth.helper_functions import get_current_user
+from ..auth.dependencies import get_current_user
 from ..auth.models import User
 from ..config import settings
 from ..database import get_session, save_and_refresh

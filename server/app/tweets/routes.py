@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException
 from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Session
 
-from ..auth.helper_functions import get_current_user
+from ..auth.dependencies import get_current_user
 from ..auth.models import User
 from ..database import get_session, save_and_refresh
 from ..tweets_common.helper_functions import (

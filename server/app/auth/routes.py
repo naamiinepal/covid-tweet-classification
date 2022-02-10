@@ -4,13 +4,12 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, or_, select
 
-from app.database import get_session, save_and_refresh
-
+from ..database import get_session, save_and_refresh
 from . import router
+from .dependencies import get_current_user, get_username_from_token
 from .helper_functions import (
     authenticate_user,
     create_access_token_from_username,
-    get_current_user,
     get_password_hash,
 )
 from .models import Token, User, UserCreate, UserRead, UserUpdate
@@ -47,6 +46,7 @@ def login(
     return create_access_token_from_username(user.username)
 
 
+# TODO: Store verifier somewhere
 @router.post(
     "/register",
     response_model=Token,
@@ -54,6 +54,9 @@ def login(
 )
 def register(
     user: UserCreate,
+    _: User = Depends(
+        get_username_from_token
+    ),  # Avoid accessing the database since it is not used anywhere
     session: Session = Depends(get_session),
 ):
     """
