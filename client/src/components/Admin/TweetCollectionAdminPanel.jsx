@@ -28,7 +28,8 @@ const TweetCollectionAdminPanel = ({ action }) => {
   useEffect(() => {
     axios
       .get(
-        `/${action === "verify" ? "pseudo_tweets" : "tweets"
+        `/${
+          action === "verify" ? "pseudo_tweets" : "tweets"
         }/?offset=${offset}&limit=10&minority=${minority}`
       )
       .then((data) => data.data)
@@ -81,7 +82,6 @@ const TweetCollectionAdminPanel = ({ action }) => {
       <TableContainer component={Paper} sx={{ height: 500 }}>
         <Table stickyHeader sx={{ minWidth: 650 }} aria-label="simple table">
           <colgroup>
-            <col width="6%" />
             <col width="80%" />
             <col width="2%" />
             <col width="2%" />
@@ -91,6 +91,7 @@ const TweetCollectionAdminPanel = ({ action }) => {
             <col width="2%" />
             <col width="2%" />
             <col width="2%" />
+            <col width="6%" />
           </colgroup>
           <TableHead>
             <TableRow>

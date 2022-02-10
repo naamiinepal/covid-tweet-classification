@@ -1,10 +1,10 @@
 const baseAddress = "http://localhost:8000";
 const columns = [
-    {field: "verify", label: "Verify", headerName: "Verify"},
+   
     {
         field: "text",
         label: "Text",
-        Headername: "text",
+        headerName: "text",
     },
     {
         field: "covid_stats",
@@ -62,5 +62,6 @@ const columns = [
         label: "Covid Waves and Variants",
         headerName: "Covid Waves \n and \n Variants",
     },
+     {field: "verify", label: "Verify", headerName: "Verify"},
 ];
 export {baseAddress, columns};
