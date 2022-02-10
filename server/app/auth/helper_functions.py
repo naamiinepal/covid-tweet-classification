@@ -36,7 +36,7 @@ def get_user(session: Session, username: str):
     """
     Get a user from the DB
     """
-    user = session.exec(select(User).where(User.username == username)).first()
+    user = session.exec(select(User).where(User.username == username)).one_or_none()
     return user
 
 

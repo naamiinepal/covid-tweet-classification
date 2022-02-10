@@ -1,13 +1,14 @@
-import pytest
 from fastapi.testclient import TestClient
 from requests import Response
-from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 
 from app.auth.helper_functions import get_password_hash
 from app.auth.models import User
 
 base_path = "/auth/"
+
+register_path = base_path + "register"
+login_path = base_path + "login"
 
 
 def verify_access_token(response: Response):
@@ -22,11 +23,9 @@ def test_unauth_get_me(client: TestClient):
     assert response.status_code == 401
 
 
-# Duplicate email check fails for now
-@pytest.mark.xfail(raises=IntegrityError)
 def test_register(client: TestClient):
     response = client.post(
-        base_path + "register",
+        register_path,
         json={
             "username": "john",
             "email": "john@example.com",
@@ -39,7 +38,7 @@ def test_register(client: TestClient):
 
     # Cannot insert user of same username
     response = client.post(
-        base_path + "register",
+        register_path,
         json={
             "username": "john",
             "email": "test@example.com",
@@ -51,7 +50,7 @@ def test_register(client: TestClient):
 
     # Cannot insert user of same email
     response = client.post(
-        base_path + "register",
+        register_path,
         json={
             "username": "johnathan",
             "email": "john@example.com",
@@ -74,7 +73,7 @@ def test_login(client: TestClient, session: Session):
     session.commit()
 
     response = client.post(
-        base_path + "login",
+        login_path,
         {"username": user.username, "password": password},
     )
 
@@ -84,7 +83,7 @@ def test_login(client: TestClient, session: Session):
 
     # Incorrect Password
     response = client.post(
-        base_path + "login",
+        login_path,
         {"username": user.username, "password": "hashed_password"},
     )
 
@@ -93,7 +92,7 @@ def test_login(client: TestClient, session: Session):
 
 def test_unauth_login(client: TestClient):
     response = client.post(
-        base_path + "login",
+        login_path,
         {"username": "john", "password": "secret4"},
     )
 

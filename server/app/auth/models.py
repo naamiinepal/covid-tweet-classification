@@ -6,7 +6,7 @@ from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 # Data Models
 
 if TYPE_CHECKING:
-    from app.tweets.models import Tweet
+    from ..tweets_common.models import Tweet
 
 
 class Token(BaseModel):

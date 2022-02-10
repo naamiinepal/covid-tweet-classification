@@ -1,6 +1,8 @@
+from typing import List
+
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session
+from sqlmodel import Session, or_, select
 
 from app.database import get_session, save_and_refresh
 
@@ -10,7 +12,6 @@ from .helper_functions import (
     create_access_token_from_username,
     get_current_user,
     get_password_hash,
-    get_user,
 )
 from .models import Token, User, UserCreate, UserRead, UserUpdate
 
@@ -58,11 +59,27 @@ def register(
     """
     Register user and return access token
     """
-    user_exits = get_user(session, user.username) is not None
-    if user_exits:
-        raise HTTPException(
-            status_code=400, detail=f"The username: {user.username} already exists"
+    prev_users: List[User] = session.exec(
+        select(User).where(
+            or_(User.username == user.username, User.email == user.email)
         )
+    ).all()
+    if prev_users:
+        username_match = False
+        email_match = False
+        # I have not kept break and checks since max(len(db_users)) = 2
+        for u in prev_users:
+            if u.username == user.username:
+                username_match = True
+            if u.email == user.email:
+                email_match = True
+        if username_match and email_match:
+            detail = f"username: {user.username} and the email: {user.email}"
+        elif username_match:
+            detail = f"username: {user.username}"
+        else:
+            detail = f"email: {user.email}"
+        raise HTTPException(status_code=400, detail=f"The {detail} already exists.")
 
     hashed_password = get_password_hash(user.password)
     db_user = User.from_orm(user, {"hashed_password": hashed_password})
