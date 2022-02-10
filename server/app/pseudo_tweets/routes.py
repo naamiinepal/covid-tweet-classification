@@ -93,7 +93,7 @@ def verify_pseudo_tweet(
             **tweet_data,
             "id": None,  # Let database decide the id of the new row in Tweet
             "verified_at": datetime.now(timezone.utc),
-            "verifier": db_user,  # Tweet needs the user when forming
+            "verifier_id": db_user.id,  # Tweet needs the user id when forming
         },
     )
 
