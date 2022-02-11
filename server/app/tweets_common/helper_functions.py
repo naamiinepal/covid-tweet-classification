@@ -50,8 +50,8 @@ def get_scalar_select(Model: ModelType):
     return select(*scalar_tweet_attr, others_column)
 
 
-def map_tweet_update(func: Callable):
-    return tuple(map(func, TweetUpdate.__fields__))
+def map_tweet_update(mapper_func: Callable[[str]]):
+    return tuple(map(mapper_func, TweetUpdate.__fields__))
 
 
 def get_others_column(Model: ModelType):
