@@ -5,7 +5,7 @@ from fastapi import Depends
 from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Session
 
-from ..auth.dependencies import get_current_user
+from ..auth.dependencies import get_current_user, get_username_from_token
 from ..auth.models import User
 from ..config import settings
 from ..database import get_session, save_and_refresh
@@ -112,7 +112,9 @@ def verify_pseudo_tweet(
     responses={404: {"description": "PseudoTweet Not found"}},
 )
 def delete_pseudo_tweet(
-    pseudo_tweet_id: PositiveInt, session: Session = Depends(get_session)
+    pseudo_tweet_id: PositiveInt,
+    _: User = Depends(get_username_from_token),
+    session: Session = Depends(get_session),
 ):
     """
     Delete a pseudo tweet by id.
