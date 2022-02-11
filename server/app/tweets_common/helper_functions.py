@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Tuple, TypeVar
+from typing import Any, Callable, Optional, Tuple, TypeVar
 
 from fastapi import HTTPException
 from pydantic import PositiveInt
@@ -50,7 +50,7 @@ def get_scalar_select(Model: ModelType):
     return select(*scalar_tweet_attr, others_column)
 
 
-def map_tweet_update(mapper_func: Callable[[str]]):
+def map_tweet_update(mapper_func: Callable[[str], Any]):
     return tuple(map(mapper_func, TweetUpdate.__fields__))
 
 
