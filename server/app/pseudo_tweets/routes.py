@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Optional
 
 from fastapi import Depends
 from pydantic import NonNegativeInt, PositiveInt, conint
@@ -7,7 +7,6 @@ from sqlmodel import Session
 
 from ..auth.dependencies import get_current_user, get_username_from_token
 from ..auth.models import User
-from ..config import settings
 from ..database import get_session, save_and_refresh
 from ..tweets_common.helper_functions import (
     get_a_tweet,
@@ -17,7 +16,14 @@ from ..tweets_common.helper_functions import (
     get_scalar_select,
     make_tweet_read,
 )
-from ..tweets_common.models import Overview, PseudoTweet, Tweet, TweetRead, TweetUpdate
+from ..tweets_common.models import (
+    Overview,
+    PseudoTweet,
+    Topics,
+    Tweet,
+    TweetRead,
+    TweetUpdate,
+)
 from . import router
 
 
@@ -37,16 +43,16 @@ def get_pseudo_overview(all: bool = False, session: Session = Depends(get_sessio
 def read_pseudo_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
-    minority: bool = False,
+    filter_topic: Optional[Topics] = None,
     session: Session = Depends(get_session),
 ):
     """
     Read pseudo tweets within the offset and limit
     """
     selection = get_scalar_select(PseudoTweet)
-    if minority:
+    if filter_topic is not None:
         # The lockdown has the lowest number of true examples for now
-        selection = selection.filter(getattr(PseudoTweet, settings.minority_label))
+        selection = selection.filter(getattr(PseudoTweet, filter_topic))
     tweets = session.exec(selection.offset(offset).limit(limit)).all()
     return tweets
 
