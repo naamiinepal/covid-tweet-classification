@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
 from pydantic import BaseModel, PositiveInt
@@ -8,6 +9,21 @@ if TYPE_CHECKING:
     from app.auth.models import User
 
 # Data Models
+
+
+class Topics(str, Enum):
+    """
+    Used as choices to filter the tweets
+    """
+
+    covid_stats = "covid_stats"
+    vaccination = "vaccination"
+    covid_politics = "covid_politics"
+    humour = "humour"
+    lockdown = "lockdown"
+    civic_views = "civic_views"
+    life_during_pandemic = "life_during_pandemic"
+    covid_waves_and_variants = "covid_waves_and_variants"
 
 
 class Overview(BaseModel):

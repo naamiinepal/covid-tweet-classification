@@ -80,6 +80,7 @@ const fetchLabels = async () =>
       const humour = data.map((datum) => datum.humour);
       const lockdown = data.map((datum) => datum.lockdown);
       const civic_views = data.map((datum) => datum.civic_views);
+      const others = data.map((datum) => datum.others);
       const life_during_pandemic = data.map(
         (datum) => datum.life_during_pandemic
       );
@@ -95,6 +96,7 @@ const fetchLabels = async () =>
         civic_views: civic_views,
         life_during_pandemic: life_during_pandemic,
         covid_waves_and_variants: covid_waves_and_variants,
+        others: others,
       };
       finalData["labels"] = data.map((datum) => datum.created_date);
       finalData["datasets"] = columns
@@ -132,6 +134,7 @@ function LineChart() {
       "Civic Views",
       "Life During Pandemic",
       "Covid Waves and Variants",
+      "Others",
     ];
     fetchLabels().then((label2) => {
       if (label2.labels) {
