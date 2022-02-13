@@ -7,13 +7,12 @@ import { useLocation, useNavigate } from "react-router";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  let navigate = useNavigate();
-  let location = useLocation();
-  let auth = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const auth = useAuth();
 
-  let from = location.state?.from?.pathname || "/";
-
-  function handleSubmit() {
+  function handleSubmit(e) {
+    e.preventDefault();
     auth.signin(username, password, () => {
       // Send them back to the page they tried to visit when they were
       // redirected to the login page. Use { replace: true } so we don't create
@@ -21,6 +20,7 @@ export default function Login() {
       // when they get to the protected page and click the back button, they
       // won't end up back on the login page, which is also really nice for the
       // user experience.
+      const from = location.state?.from?.pathname || "/";
 
       navigate(from, { replace: true });
     });
@@ -29,36 +29,36 @@ export default function Login() {
   return (
     <Card className="w-1/3 flex flex-col mx-auto mt-10 p-4 items-center">
       <DialogTitle>EpiSuS Login</DialogTitle>
-      <div className="my-2">
-        <TextField
-          id="outlined-username"
-          label="Username"
-          onChange={(event) => {
-            setUsername(event.target.value);
-          }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </div>
-      <div className="mb-3">
-        <TextField
-          id="outlined-password"
-          label="Password"
-          type="password"
-          onChange={(event) => {
-            setPassword(event.target.value);
-          }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </div>
-      <div>
-        <Button variant="contained" onClick={handleSubmit}>
+      <form onSubmit={handleSubmit}>
+        <div className="my-2">
+          <TextField
+            id="outlined-username"
+            label="Username"
+            onChange={(event) => {
+              setUsername(event.target.value);
+            }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </div>
+        <div className="mb-3">
+          <TextField
+            id="outlined-password"
+            label="Password"
+            type="password"
+            onChange={(event) => {
+              setPassword(event.target.value);
+            }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </div>
+        <Button type="submit" variant="contained">
           Login
         </Button>
-      </div>
+      </form>
     </Card>
   );
 }
