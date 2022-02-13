@@ -27,9 +27,9 @@ export default function Login() {
   }
 
   return (
-    <Card className="w-1/3 flex flex-col mx-auto mt-10 p-4 items-center">
-      <DialogTitle>EpiSuS Login</DialogTitle>
-      <form onSubmit={handleSubmit}>
+    <Card className="w-1/3 mx-auto mt-10 p-4">
+      <DialogTitle className="text-center">EpiSuS Login</DialogTitle>
+      <form className=" flex flex-col items-center" onSubmit={handleSubmit}>
         <div className="my-2">
           <TextField
             id="outlined-username"
