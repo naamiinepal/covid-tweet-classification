@@ -29,6 +29,7 @@ ChartJS.register(
 
 export const options = {
   responsive: true,
+  tension: 0.3,
   plugins: {
     legend: {
       position: 'top',
