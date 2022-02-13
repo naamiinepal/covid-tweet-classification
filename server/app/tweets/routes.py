@@ -38,7 +38,9 @@ def read_tweets(
     """
     Read tweets within the offset and limit
     """
-    tweets = session.exec(get_scalar_select(Tweet).offset(offset).limit(limit)).all()
+    tweets = session.exec(
+        get_scalar_select(Tweet).order_by(Tweet.id.desc()).offset(offset).limit(limit)
+    ).all()
     return tweets
 
 
