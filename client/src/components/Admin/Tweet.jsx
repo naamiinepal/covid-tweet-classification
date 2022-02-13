@@ -86,7 +86,7 @@ const Tweet = ({ row, verified, action }) => {
     >
       {columns
         .map((column) => column.field)
-        .filter((datum) => datum !== "verify")
+        .filter((datum) => datum !== "verify" && datum !== "others")
         .map((datum, index) => {
           if (datum === "text")
             return (
