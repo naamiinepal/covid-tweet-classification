@@ -44,7 +44,8 @@ def read_tweets(
     if filter_topic is not None:
         selection = selection.filter(getattr(Tweet, filter_topic))
 
-    tweets = session.exec(selection.offset(offset).limit(limit)).all()
+    tweets = session.exec(selection.order_by(Tweet.id.desc()).offset(offset).limit(limit)).all()
+
     return tweets
 
 

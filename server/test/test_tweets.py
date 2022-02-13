@@ -59,4 +59,4 @@ def test_overview(inserted_tweets: Tuple[Tweet, Tweet], client: TestClient):
 
 
 def test_list_tweets(inserted_tweets: Tuple[Tweet, Tweet], client: TestClient):
-    list_tweets_helper(base_path, inserted_tweets, client)
+    list_tweets_helper(base_path, inserted_tweets, client, desc=True)

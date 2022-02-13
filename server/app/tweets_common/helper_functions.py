@@ -15,7 +15,7 @@ def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> di
         get_scalar_select(Model).where(Model.id == tweet_id)
     ).one_or_none()
 
-    assert_not_null(tweet, tweet_id)
+    assert_not_null(tweet, tweet_id, Model)
 
     return tweet
 
@@ -31,14 +31,14 @@ def get_combined_tweet(
         select(Model, get_others_column(Model)).where(Model.id == tweet_id)
     ).one_or_none()
 
-    assert_not_null(tweet, tweet_id)
+    assert_not_null(tweet, tweet_id, Model)
 
     return tweet
 
 
-def assert_not_null(tweet: Optional[ModelType], id: PositiveInt):
+def assert_not_null(tweet: Optional[ModelType], id: PositiveInt, Model: ModelType):
     if tweet is None:
-        raise HTTPException(404, f"{tweet.__name__} with id: {id} not found.")
+        raise HTTPException(404, f"{Model.__name__} with id: {id} not found.")
 
 
 def get_scalar_select(Model: ModelType):

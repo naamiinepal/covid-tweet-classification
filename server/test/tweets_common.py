@@ -29,7 +29,10 @@ def overview_helper(
 
 
 def list_tweets_helper(
-    base_path: str, inserted_tweets: Tuple[ModelType, ModelType], client: TestClient
+    base_path: str,
+    inserted_tweets: Tuple[ModelType, ModelType],
+    client: TestClient,
+    desc: bool = False,
 ):
     response = client.get(base_path)
     assert response.status_code == 200
@@ -40,8 +43,11 @@ def list_tweets_helper(
 
     tweet1, tweet2 = inserted_tweets
 
-    assert json_response[0]["text"] == tweet1.text
-    assert json_response[1]["text"] == tweet2.text
+    first_index = desc
+    second_index = ~first_index
 
-    assert json_response[0]["username"] == tweet1.username
-    assert json_response[1]["username"] == tweet2.username
+    assert json_response[first_index]["text"] == tweet1.text
+    assert json_response[second_index]["text"] == tweet2.text
+
+    assert json_response[first_index]["username"] == tweet1.username
+    assert json_response[second_index]["username"] == tweet2.username
