@@ -67,13 +67,18 @@ const TweetCollectionAdminPanel = ({ action }) => {
           </colgroup>
           <TableHead>
             <TableRow>
-              {columns.map((column, index) => {
-                return (
-                  <TableCell key={index} sx={{ width: 50, fontWeight: "bold" }}>
-                    {column.headerName}
-                  </TableCell>
-                );
-              })}
+              {columns
+                .filter((column) => column.field !== "others")
+                .map((column, index) => {
+                  return (
+                    <TableCell
+                      key={index}
+                      sx={{ width: 50, fontWeight: "bold" }}
+                    >
+                      {column.headerName}
+                    </TableCell>
+                  );
+                })}
             </TableRow>
           </TableHead>
           <TableBody>
