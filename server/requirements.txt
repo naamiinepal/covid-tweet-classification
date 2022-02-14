@@ -5,7 +5,7 @@ asgiref==3.5.0
 attrs==21.4.0
 certifi==2021.10.8
 cffi==1.15.0
-charset-normalizer==2.0.11
+charset-normalizer==2.0.12
 click==8.0.3
 dnspython==2.2.0
 email-validator==1.1.3
