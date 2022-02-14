@@ -108,7 +108,7 @@ const fetchLabels = async () =>
           return {
             data: dataArrays[column.field],
             label: column.label,
-            borderColor: column.borderColor,
+            borderColor: column.backgroundColor,
             backgroundColor: column.backgroundColor,
           };
         });
