@@ -2,7 +2,7 @@ from typing import Any, Callable, Optional, Tuple, TypeVar
 
 from fastapi import HTTPException
 from pydantic import PositiveInt
-from sqlmodel import Integer, Session, and_, func, not_, select, union
+from sqlmodel import Integer, Session, and_, func, not_, select, union_all
 
 from .models import PseudoTweet, Tweet, TweetRead, TweetUpdate
 
@@ -88,7 +88,7 @@ def get_all_overview(session: Session):
         )
 
     all_model = (
-        union(get_overview_selection(Tweet), get_overview_selection(PseudoTweet))
+        union_all(get_overview_selection(Tweet), get_overview_selection(PseudoTweet))
         .subquery()
         .c
     )
