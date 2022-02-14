@@ -32,6 +32,8 @@ ChartJS.register(
 
 const options = {
   responsive: true,
+  // tension: 0.3,
+  cubicInterpolationMode: "monotone",
   plugins: {
     legend: {
       position: "top",
@@ -107,7 +109,7 @@ const fetchLabels = async () =>
           return {
             data: dataArrays[column.field],
             label: column.label,
-            borderColor: column.borderColor,
+            borderColor: column.backgroundColor,
             backgroundColor: column.backgroundColor,
           };
         });
