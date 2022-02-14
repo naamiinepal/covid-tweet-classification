@@ -76,6 +76,7 @@ class Tweet(TweetBase, table=True):
     # The user who moved tweet from TweetBase to Tweet
     verifier_id: PositiveInt = Field(foreign_key="user.id")
     verifier: "User" = Relationship(
+        back_populates="verified_tweets",
         sa_relationship_kwargs={"foreign_keys": "Tweet.verifier_id"},
     )
 
@@ -88,6 +89,7 @@ class Tweet(TweetBase, table=True):
     # The user who modified tweet in Tweet itself, so optional
     modifier_id: Optional[PositiveInt] = Field(default=None, foreign_key="user.id")
     modifier: Optional["User"] = Relationship(
+        back_populates="modified_tweets",
         sa_relationship_kwargs={"foreign_keys": "Tweet.modifier_id"},
     )
 

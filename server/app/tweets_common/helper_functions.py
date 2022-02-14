@@ -21,7 +21,7 @@ def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> di
 
 
 def make_tweet_read(tweet: ModelType, others: bool):
-    return TweetRead.from_orm(tweet, {"others": others})
+    return TweetRead.parse_obj(tweet.dict(), {"others": others})
 
 
 def get_combined_tweet(
