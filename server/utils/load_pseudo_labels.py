@@ -5,7 +5,7 @@ from typing import List, Mapping, Union
 from sqlmodel import Session
 
 from app.database import get_session
-from app.tweets.models import PseudoTweet
+from app.tweets_common.models import PseudoTweet
 
 with open(
     "utils/nepali_tweets_dataset_no_topics_v3_with_created_at_username.csv"
@@ -13,7 +13,7 @@ with open(
     pseudo_tweets: List[PseudoTweet] = []
     for row in DictReader(csvfile):
         created_at: datetime = datetime.strptime(
-            row["created_at"], "%a %b %d %H:%M:%S %z %Y"
+            row["created_at"], r"%a %b %d %H:%M:%S %z %Y"
         )
         kwargs: Mapping[str, Union[str, datetime]] = {
             **row,

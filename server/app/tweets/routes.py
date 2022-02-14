@@ -44,7 +44,9 @@ def read_tweets(
     if filter_topic is not None:
         selection = selection.filter(getattr(Tweet, filter_topic))
 
-    tweets = session.exec(selection.order_by(Tweet.id.desc()).offset(offset).limit(limit)).all()
+    tweets = session.exec(
+        selection.order_by(Tweet.id.desc()).offset(offset).limit(limit)
+    ).all()
 
     return tweets
 
@@ -93,7 +95,6 @@ def update_tweet(
     for key, value in tweet_data.items():
         setattr(db_tweet, key, value)
 
-    db_tweet.modified_at = datetime.now(timezone.utc)
     db_tweet.modifier = db_user
 
     save_and_refresh(session, db_tweet)
