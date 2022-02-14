@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 
 from app.auth.models import User
 from app.database import get_session
-from app.tweets.models import Tweet
+from app.tweets_common.models import Tweet
 
 with open("utils/nepali_tweets_dataset_vectors_EHnM_v2_with_annotator.csv") as csvfile:
     tweets: List[Tweet] = []

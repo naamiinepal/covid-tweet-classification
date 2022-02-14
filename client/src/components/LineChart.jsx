@@ -32,7 +32,6 @@ ChartJS.register(
 
 const options = {
   responsive: true,
-  // tension: 0.3,
   cubicInterpolationMode: "monotone",
   plugins: {
     legend: {

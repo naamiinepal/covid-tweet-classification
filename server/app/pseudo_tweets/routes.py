@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import Depends
@@ -98,7 +97,6 @@ def verify_pseudo_tweet(
         {
             **tweet_data,
             "id": None,  # Let database decide the id of the new row in Tweet
-            "verified_at": datetime.now(timezone.utc),
             "verifier_id": db_user.id,  # Tweet needs the user id when forming
         },
     )
@@ -109,7 +107,7 @@ def verify_pseudo_tweet(
     # Save verified tweet and refresh it to get the new id
     save_and_refresh(session, verified_tweet)
 
-    return make_tweet_read(db_pseudo_tweet, others)
+    return make_tweet_read(verified_tweet, others)
 
 
 @router.delete(

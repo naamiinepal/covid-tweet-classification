@@ -1,9 +1,9 @@
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
 from pydantic import BaseModel, PositiveInt
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, func
 
 if TYPE_CHECKING:
     from app.auth.models import User
@@ -76,18 +76,26 @@ class Tweet(TweetBase, table=True):
     # The user who moved tweet from TweetBase to Tweet
     verifier_id: PositiveInt = Field(foreign_key="user.id")
     verifier: "User" = Relationship(
+        back_populates="verified_tweets",
         sa_relationship_kwargs={"foreign_keys": "Tweet.verifier_id"},
     )
 
-    verified_at: datetime
+    # Do not manually modify it
+    verified_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column_kwargs={"server_default": func.now()},
+    )
 
     # The user who modified tweet in Tweet itself, so optional
     modifier_id: Optional[PositiveInt] = Field(default=None, foreign_key="user.id")
     modifier: Optional["User"] = Relationship(
+        back_populates="modified_tweets",
         sa_relationship_kwargs={"foreign_keys": "Tweet.modifier_id"},
     )
 
-    modified_at: Optional[datetime] = Field(default=None)
+    modified_at: Optional[datetime] = Field(
+        default=None, sa_column_kwargs={"onupdate": func.now()}
+    )
 
 
 class PseudoTweet(TweetBase, table=True):
