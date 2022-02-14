@@ -11,6 +11,9 @@ ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
 
 
 def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> dict:
+    """
+    Get a not-None tweet from the database with others column as a dictonary
+    """
     tweet = session.exec(
         get_scalar_select(Model).where(Model.id == tweet_id)
     ).one_or_none()
@@ -21,12 +24,19 @@ def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> di
 
 
 def make_tweet_read(tweet: ModelType, others: bool):
+    """
+    Make a TweetRead object from a Tweet or PseudoTweet row
+    """
     return TweetRead.parse_obj(tweet.dict(), {"others": others})
 
 
 def get_combined_tweet(
     session: Session, tweet_id: PositiveInt, Model: ModelType
 ) -> Tuple[ModelType, bool]:
+    """
+    Get a not-None combined tweet from the database with others column
+    and model separated as tuple
+    """
     tweet = session.exec(
         select(Model, get_others_column(Model)).where(Model.id == tweet_id)
     ).one_or_none()
@@ -37,12 +47,22 @@ def get_combined_tweet(
 
 
 def assert_not_null(tweet: Optional[ModelType], id: PositiveInt, Model: ModelType):
+    """
+    Make sure the provided row of tweet is not None
+    """
     if tweet is None:
         raise HTTPException(404, f"{Model.__name__} with id: {id} not found.")
 
 
 def get_scalar_select(Model: ModelType):
+    """
+    Get a select statement for the Model with others column
+    """
+
     def get_model_attr(field: str):
+        """
+        Convert a field to Model.field
+        """
         return getattr(Model, field)
 
     others_column = get_others_column(Model)
@@ -51,18 +71,36 @@ def get_scalar_select(Model: ModelType):
 
 
 def map_tweet_update(mapper_func: Callable[[str], Any]):
+    """
+    Return a tuple after mapping TweetUpdate fields (numeric fields)
+    to mapper_func
+    """
     return tuple(map(mapper_func, TweetUpdate.__fields__))
 
 
 def get_others_column(Model: ModelType):
+    """
+    Get others column for the selection statement
+    """
+
     def negate_columns(field: str):
+        """
+        Negate each field in the Model
+        """
         return not_(getattr(Model, field))
 
     return and_(*map_tweet_update(negate_columns)).label("others")
 
 
 def get_db_overview(session: Session, Model: ModelType):
-    def get_overview_row(column: str):
+    """
+    Get overview of the database for the given Model
+    """
+
+    def get_overview_column(column: str):
+        """
+        Get a column for the selection of the overview
+        """
         return func.sum(getattr(Model, column), type_=Integer).label(column)
 
     created_date = func.date(Model.created_at).label("created_date")
@@ -70,7 +108,7 @@ def get_db_overview(session: Session, Model: ModelType):
 
     return session.exec(
         select(
-            *map_tweet_update(get_overview_row),
+            *map_tweet_update(get_overview_column),
             func.sum(others_column, type_=Integer).label("others"),
             created_date,
         ).group_by(created_date)
@@ -78,7 +116,15 @@ def get_db_overview(session: Session, Model: ModelType):
 
 
 def get_all_overview(session: Session):
+    """
+    Get overview of the database for Tweet and PseudoTweet combined
+    """
+
     def get_overview_selection(Model: ModelType):
+        """
+        Get the selection statement with numeric columns only and created_at
+        """
+
         def get_model_attr(attr: str):
             return getattr(Model, attr)
 
