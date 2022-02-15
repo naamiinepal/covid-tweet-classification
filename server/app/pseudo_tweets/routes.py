@@ -55,12 +55,13 @@ def read_pseudo_tweets(
         # The lockdown has the lowest number of true examples for now
         selection = selection.filter(getattr(PseudoTweet, filter_topic))
     if maximize_labels:
-        selection = selection.order_by(
-            reduce(
-                lambda x, y: x + y,
-                (getattr(PseudoTweet, field) for field in TweetUpdate.__fields__),
-            ).desc()
-        )
+
+        def get_model_attr(attr: str):
+            """Get attr of PseudoTweet"""
+            return getattr(PseudoTweet, attr)
+
+        labels_sum = tuple(map(get_model_attr, TweetUpdate.__fields__))
+        selection = selection.order_by(sum(labels_sum[1:], labels_sum[0]).desc())
     tweets = session.exec(selection.offset(offset).limit(limit)).all()
     return tweets
 
