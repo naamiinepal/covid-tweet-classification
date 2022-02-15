@@ -27,7 +27,7 @@ const TweetCollectionAdminPanel = ({ action }) => {
           action === "verify" ? "pseudo_tweets" : "tweets"
         }/?offset=${offset}&limit=10${
           topic !== `none` ? `&filter_topic=${topic}` : ""
-        }`
+        }&maximize_labels=true`
       )
       .then((data) => data.data)
       .then((data) => {
