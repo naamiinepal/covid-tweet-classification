@@ -1,3 +1,4 @@
+from functools import reduce
 from typing import List, Optional
 
 from fastapi import Depends
@@ -43,6 +44,7 @@ def read_pseudo_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
     filter_topic: Optional[Topics] = None,
+    maximize_labels: bool = False,
     session: Session = Depends(get_session),
 ):
     """
@@ -52,6 +54,13 @@ def read_pseudo_tweets(
     if filter_topic is not None:
         # The lockdown has the lowest number of true examples for now
         selection = selection.filter(getattr(PseudoTweet, filter_topic))
+    if maximize_labels:
+        selection = selection.order_by(
+            reduce(
+                lambda x, y: x + y,
+                (getattr(PseudoTweet, field) for field in TweetUpdate.__fields__),
+            ).desc()
+        )
     tweets = session.exec(selection.offset(offset).limit(limit)).all()
     return tweets
 
