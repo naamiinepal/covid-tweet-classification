@@ -2,12 +2,30 @@ from typing import Any, Callable, Optional, Tuple, TypeVar
 
 from fastapi import HTTPException
 from pydantic import PositiveInt
-from sqlmodel import Integer, Session, and_, func, not_, select, union_all
+from sqlmodel import Integer, Session, and_, func, not_, select, text, union_all
 
-from .models import PseudoTweet, Tweet, TweetRead, TweetUpdate
+from .models import PseudoTweet, Topics, Tweet, TweetRead, TweetUpdate
 
 # Make a Generic Type to get the original type completion back
 ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
+
+
+def get_filtered_selection(filter_topic: Optional[Topics], Model: ModelType):
+    """
+    Get selection query with filter depending upon filter_topic
+    """
+    selection = get_scalar_select(Model)
+
+    if filter_topic is not None:
+        filter = (
+            text(
+                Topics.others
+            )  # Since others is defined in the selection, directly provide the column
+            if filter_topic == Topics.others
+            else getattr(Model, filter_topic)
+        )
+        selection = selection.filter(filter)
+    return selection
 
 
 def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> dict:

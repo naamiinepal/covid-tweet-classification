@@ -11,7 +11,7 @@ from ..tweets_common.helper_functions import (
     get_a_tweet,
     get_combined_tweet,
     get_db_overview,
-    get_scalar_select,
+    get_filtered_selection,
     make_tweet_read,
 )
 from ..tweets_common.models import Overview, Topics, Tweet, TweetRead, TweetUpdate
@@ -38,10 +38,7 @@ def read_tweets(
     """
     Read tweets within the offset and limit
     """
-    selection = get_scalar_select(Tweet)
-
-    if filter_topic is not None:
-        selection = selection.filter(getattr(Tweet, filter_topic))
+    selection = get_filtered_selection(filter_topic, Tweet)
 
     tweets = session.exec(
         selection.order_by(Tweet.id.desc()).offset(offset).limit(limit)

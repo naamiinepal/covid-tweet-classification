@@ -24,6 +24,7 @@ class Topics(str, Enum):
     civic_views = "civic_views"
     life_during_pandemic = "life_during_pandemic"
     covid_waves_and_variants = "covid_waves_and_variants"
+    others = "others"
 
 
 class Overview(BaseModel):

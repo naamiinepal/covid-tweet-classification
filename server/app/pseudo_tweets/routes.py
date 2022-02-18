@@ -1,4 +1,3 @@
-from functools import reduce
 from typing import List, Optional
 
 from fastapi import Depends
@@ -13,7 +12,7 @@ from ..tweets_common.helper_functions import (
     get_all_overview,
     get_combined_tweet,
     get_db_overview,
-    get_scalar_select,
+    get_filtered_selection,
     make_tweet_read,
 )
 from ..tweets_common.models import (
@@ -50,11 +49,10 @@ def read_pseudo_tweets(
     """
     Read pseudo tweets within the offset and limit
     """
-    selection = get_scalar_select(PseudoTweet)
-    if filter_topic is not None:
-        # The lockdown has the lowest number of true examples for now
-        selection = selection.filter(getattr(PseudoTweet, filter_topic))
-    if maximize_labels:
+    selection = get_filtered_selection(filter_topic, PseudoTweet)
+
+    # No need to maximize labels if sorted by others
+    if maximize_labels and filter_topic != Topics.others:
 
         def get_model_attr(attr: str):
             """Get attr of PseudoTweet"""
