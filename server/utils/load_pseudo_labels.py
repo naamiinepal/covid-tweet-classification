@@ -7,9 +7,7 @@ from sqlmodel import Session
 from app.database import get_session
 from app.tweets_common.models import PseudoTweet
 
-with open(
-    "utils/nepali_tweets_dataset_no_topics_v3_with_created_at_username.csv"
-) as csvfile:
+with open("utils/pseudo_label_dataset_feb_23.csv") as csvfile:
     pseudo_tweets: List[PseudoTweet] = []
     for row in DictReader(csvfile):
         created_at: datetime = datetime.strptime(
