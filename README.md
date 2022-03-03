@@ -10,4 +10,4 @@ Refer to the respective folders for Analysis, Client, and Server codes
 [![React Move Build to Server](https://github.com/rabinadk1/EpiSuS/actions/workflows/build-to-server.yml/badge.svg)](https://github.com/rabinadk1/EpiSuS/actions/workflows/build-to-server.yml)
 
 ### Server Side
-[![Test Backend Server](https://github.com/rabinadk1/EpiSuS/actions/workflows/test_backend.yml/badge.svg)](https://github.com/rabinadk1/EpiSuS/actions/workflows/test_backend.yml)
+[![Backend Code Coverage](https://codecov.io/gh/rabinadk1/EpiSuS/branch/main/graph/badge.svg?token=CBU0VJDGYS)](https://codecov.io/gh/rabinadk1/EpiSuS)
