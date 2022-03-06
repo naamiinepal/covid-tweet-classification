@@ -34,7 +34,7 @@ jobs:
         pip install -r requirements.txt
         pip install pytest-cov
     - name: Generate coverage report
-      run: pytest --cov=app --cov-report=xml test
+      run: pytest --cov . --cov-report=xml
       env:
         JWT_SECRET_KEY: ${{ github.sha }}
     - name: "Upload coverage to Codecov"
@@ -42,4 +42,3 @@ jobs:
       with:
         fail_ci_if_error: true
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-        working-directory: server/
