@@ -1,6 +1,19 @@
 const baseAddress = "http://localhost:8000";
+const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+];
 const columns = [
-   
     {
         field: "text",
         label: "Text",
@@ -68,8 +81,7 @@ const columns = [
         backgroundColor: "#f564d4",
         label: "Others",
         headerName: "Others",
-   
     },
-     {field: "verify", label: "Verify", headerName: "Verify"},
+    {field: "verify", label: "Verify", headerName: "Verify"},
 ];
-export {baseAddress, columns};
+export {baseAddress, columns, months};
