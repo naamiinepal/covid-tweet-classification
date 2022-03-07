@@ -1,21 +1,19 @@
-import TweetCollection from "./CSVReader";
 import LineChart from "./LineChart";
 import Nav from "./Nav";
 import Purpose from "./Purpose";
+import Tweets from "./Tweets";
 
 const EndUser = () => {
-  return (
-    <div className="bg-blue-50 pb-16">
-      <Nav />
-      <div className="mt-3">
-        <Purpose />
-        <LineChart />
-        <TweetCollection />
-      </div>
-
-      {/* <DataGridDemo /> */}
-    </div>
-  );
+    return (
+        <div>
+            <Nav />
+            <div className=" bg-blue-50">
+                <Purpose />
+                <LineChart />
+                <Tweets />
+            </div>
+        </div>
+    );
 };
 
 export default EndUser;
