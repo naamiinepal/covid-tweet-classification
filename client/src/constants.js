@@ -25,6 +25,8 @@ const columns = [
         borderColor: "#390ba4",
         backgroundColor: "#f77189",
         headerName: "covid \n stats",
+        description:
+            " Statistics about new cases, deaths, total cases, tests, casualties, etc.",
     },
     {
         field: "vaccination",
@@ -32,6 +34,7 @@ const columns = [
         borderColor: "#8c0096",
         backgroundColor: "#d58c32",
         headerName: "vaccination",
+        description: "Serious information regarding vaccination.",
     },
     {
         field: "covid_politics",
@@ -39,6 +42,8 @@ const columns = [
         borderColor: "#bf0082",
         backgroundColor: "#a4a031",
         headerName: "covid \n politics",
+        description:
+            "National and International politics closely concerned with Covid.",
     },
     {
         field: "humour",
@@ -46,6 +51,7 @@ const columns = [
         borderColor: "#e2006a",
         backgroundColor: "#50b131",
         headerName: "humour",
+        description: "Satire, humour related to Covid.",
     },
     {
         field: "lockdown",
@@ -53,6 +59,8 @@ const columns = [
         borderColor: "#f90151",
         backgroundColor: "#34ae91",
         headerName: "lockdown",
+        description:
+            "Information regarding lockdown, nisedhagyas, exams during lockdown.",
     },
     {
         field: "civic_views",
@@ -60,6 +68,7 @@ const columns = [
         borderColor: "#ff5039",
         backgroundColor: "#37abb5",
         headerName: "civic \n views",
+        description: "General views, suggestions, rants from the public.",
     },
     {
         field: "life_during_pandemic",
@@ -67,6 +76,7 @@ const columns = [
         borderColor: "#ff7e1f",
         backgroundColor: "#3ba3ec",
         headerName: "Life During \nPandemic",
+        description: "Effect of covid on day-to-day activities of the public.",
     },
     {
         field: "covid_waves_and_variants",
@@ -74,6 +84,7 @@ const columns = [
         backgroundColor: "#bb83f4",
         label: "Covid Waves and Variants",
         headerName: "Covid Waves \n and \n Variants",
+        description: "Different waves and variants of the virus.",
     },
     {
         field: "others",
@@ -81,6 +92,7 @@ const columns = [
         backgroundColor: "#f564d4",
         label: "Others",
         headerName: "Others",
+        description: "Not related to any Covid Categories,",
     },
     {field: "verify", label: "Verify", headerName: "Verify"},
 ];
