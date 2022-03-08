@@ -61,7 +61,7 @@ const Selection = ({
                         Refuel
                     </Button>
                 </>
-            )}{" "}
+            )}
         </div>
     );
 };

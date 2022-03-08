@@ -2,6 +2,7 @@ import {Card} from "@mui/material";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import {columns} from "../constants";
 import Selection from "./Selection";
 import Tweet from "./Tweet";
 const Tweets = () => {
@@ -9,7 +10,7 @@ const Tweets = () => {
     const [offset, setOffset] = useState(0);
     const [topic, setTopic] = useState("none");
     const [reload, setReload] = useState(true);
-
+    const [description, setDescription] = useState("All tweets.");
     useEffect(() => {
         axios
             .get(
@@ -37,6 +38,16 @@ const Tweets = () => {
             });
     }, [reload, topic]);
 
+    useEffect(() => {
+        setDescription(getDescription());
+    }, [reload, topic]);
+
+    const getDescription = () => {
+        if (topic !== "none")
+            return columns.filter((column) => column.field === topic)[0]
+                .description;
+        else return "All tweets.";
+    };
     const fetchData = () => {
         setOffset(offset + 10);
     };
@@ -46,8 +57,10 @@ const Tweets = () => {
 
     return (
         <div className="w-11/12 items-stretch flex justify-between mx-auto ">
-            <Card className="w-3/12 text-center mr-3 p-3 h-96">
-                <div className="font-bold text-xl text-primary">Filter</div>
+            <Card className="w-3/12 mr-3 p-3 h-96">
+                <div className="font-bold text-center text-2xl text-primary">
+                    Filter
+                </div>
                 <Selection
                     offset={offset}
                     setOffset={setOffset}
@@ -56,6 +69,7 @@ const Tweets = () => {
                     endUser={true}
                     setTopic={setTopic}
                 />
+                <div className="text-base">{description}</div>
             </Card>
             <div className="w-3/4 overflow-y-auto">
                 <InfiniteScroll
