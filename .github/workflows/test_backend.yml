@@ -31,6 +31,7 @@ jobs:
         cache-dependency-path: server/
     - name: Install dependencies
       run: |
+        pip install -U pip
         pip install -r requirements.txt
         pip install pytest-cov
     - name: Generate coverage report
