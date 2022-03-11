@@ -39,13 +39,13 @@ const Tweets = () => {
   }, [offset, reload, topic]);
 
   useEffect(() => {
-    setDescription(getDescription());
-  }, [getDescription, reload, topic]);
+    const current_descrip =
+      topic !== "none"
+        ? columns.filter((column) => column.field === topic)[0].description
+        : "All tweets.";
 
-  const getDescription = () =>
-    topic !== "none"
-      ? columns.filter((column) => column.field === topic)[0].description
-      : "All tweets.";
+    setDescription(current_descrip);
+  }, [reload, topic]);
 
   const fetchData = () => {
     setOffset(offset + 10);
