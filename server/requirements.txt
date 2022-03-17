@@ -22,7 +22,7 @@ pycparser==2.21
 pydantic==1.9.0
 PyJWT==2.3.0
 pyparsing==3.0.7
-pytest==7.1.0
+pytest==7.1.1
 python-dotenv==0.19.2
 python-multipart==0.0.5
 requests==2.27.1
