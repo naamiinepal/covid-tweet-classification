@@ -16,6 +16,7 @@ from ..tweets_common.helper_functions import (
     make_tweet_read,
 )
 from ..tweets_common.models import Overview, Topics, Tweet, TweetRead, TweetUpdate
+from ..tweets_common.types import Month
 from . import router
 
 
@@ -35,12 +36,13 @@ def read_tweets(
     limit: conint(le=10, gt=0) = 10,
     topics: Optional[List[Topics]] = Query(None),
     day: Optional[date] = None,
+    month: Optional[Month] = Query(None, description="Month in %Y-%m format"),
     session: Session = Depends(get_session),
 ):
     """
     Read tweets within the offset and limit
     """
-    selection = get_filtered_selection(topics, day, Tweet)
+    selection = get_filtered_selection(topics, day, month, Tweet)
 
     tweets = session.exec(
         selection.order_by(Tweet.id.desc()).offset(offset).limit(limit)

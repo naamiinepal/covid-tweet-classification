@@ -1,12 +1,11 @@
 from typing import List
 
-from app.tweets_common.models import PseudoTweet, Tweet
+from sqlalchemy.exc import OperationalError
+from sqlmodel import Session
 
+from app.tweets_common.models import PseudoTweet, Tweet
 from utils.load_labels import load_database as load_label
 from utils.load_pseudo_labels import load_database as load_pseudo_label
-
-from sqlmodel import Session
-from sqlalchemy.exc import OperationalError
 
 
 def test_labels(session: Session):

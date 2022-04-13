@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any, Callable, List, Optional, Tuple, TypeVar
+from typing import Callable, List, Optional, Tuple, TypeVar
 
 from fastapi import HTTPException
 from pydantic import PositiveInt
@@ -7,6 +7,7 @@ from sqlmodel import Integer, Session, and_, func, not_, select, text, union_all
 from sqlmodel.sql.expression import Select
 
 from .models import PseudoTweet, Topics, Tweet, TweetRead, TweetUpdate
+from .types import Month
 
 # Make a Generic Type to get the original type completion back
 ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
@@ -15,6 +16,7 @@ ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
 def get_filtered_selection(
     topics: Optional[List[Topics]],
     day: Optional[date],
+    month: Optional[Month],
     Model: ModelType,
 ):
     """
@@ -31,13 +33,18 @@ def get_filtered_selection(
             # Since others is defined in the selection, directly provide the column
             filter = text(Topics.others)
         else:
-
             filter = and_(*tuple(getattr(Model, topic) for topic in topics))
 
         selection = selection.filter(filter)
 
-    if day is not None:
-        selection = selection.filter(func.date(Model.created_at) == day)
+    if day is not None or month is not None:
+        # If both specified, use day only
+        filter = (
+            func.date(Model.created_at) == day
+            if day is not None
+            else func.strftime("%Y-%m", Model.created_at) == month
+        )
+        selection = selection.filter(filter)
 
     return selection
 
