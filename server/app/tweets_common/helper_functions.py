@@ -1,5 +1,5 @@
-from typing import Any, Callable, Optional, Tuple, TypeVar
-
+from typing import Any, Callable, Optional, Tuple, TypeVar, List, Union
+from datetime import date
 from fastapi import HTTPException
 from pydantic import PositiveInt
 from sqlmodel import Integer, Session, and_, func, not_, select, text, union_all
@@ -31,6 +31,38 @@ def get_filtered_selection(filter_topic: Optional[Topics], Model: ModelType):
             if filter_topic == Topics.others
             else getattr(Model, filter_topic)
         )
+        selection = selection.filter(filter)
+    return selection
+
+
+def get_filtered_column_selection(
+    filter_topic: Optional[Topics],
+    Model: ModelType, 
+    fields: List[Union[str, date]]
+):
+    """
+    Get selection query with filter depending upon filter_topic and tweet fields
+    """
+    def get_model_attr(field: str):
+        """
+        Convert a field to Model.field
+        """
+        return getattr(Model, field)
+
+    tweet_attr = tuple(map(get_model_attr, fields))
+    selection = select(*tweet_attr)
+    
+    if filter_topic is not None:
+        if filter_topic == Topics.others:
+            others_column = get_others_column(Model)
+            filter = (
+                text(
+                    Topics.others
+                ))  # Since others is defined in the selection, directly provide the column
+            selection = select(*tweet_attr, others_column)
+        else:
+            filter = getattr(Model, filter_topic)
+        
         selection = selection.filter(filter)
     return selection
 
@@ -166,7 +198,7 @@ def get_all_overview(session: Session):
 
     return get_db_overview(session, all_model)
 
-def remove_emojis(data: str):
+async def remove_emojis(data: str):
     emoj = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
         u"\U0001F300-\U0001F5FF"  # symbols & pictographs
@@ -189,8 +221,8 @@ def remove_emojis(data: str):
                       "]+", re.UNICODE)
     return re.sub(emoj, '', data)
 
-def word_tokenize_nepali(text: str):
-    text = remove_emojis(text)
+async def word_tokenize_nepali(text: str):
+    text = await remove_emojis(text)
     text = re.sub(r"\d+", ' ', text) # remove any digits
     text = re.sub(r"[,)({}[\]\.:;`_–\-``!‘’''“”?\-।/—%\|]+", ' ', text)
     text = re.sub(r"\s+", ' ', text) # replace multiple whitespaces with single whitespace
