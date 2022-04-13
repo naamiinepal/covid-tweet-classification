@@ -1,6 +1,7 @@
 const Name = () => (
   <div className="font-bold text-primary ml-3 text-2xl">
-    Epidemiological Survillence System
+    {/* EpiSus */}
+    Epidemiological Surveillance System
     {/* <KeyboardArrowDownIcon /> */}
   </div>
 );

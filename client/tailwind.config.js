@@ -3,8 +3,11 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      backgroundImage: {
+        'hero-pattern': "url('svgs/Frontline.svg')",
+      },
       colors: {
-        primary:"#2196F3"
+        primary:"#247881"
       },
     },
   },

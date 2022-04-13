@@ -27,7 +27,7 @@ const Tweets = () => {
   useEffect(() => {
     axios
       .get(
-        `/tweets/?offset=${offset}&limit=10${
+        `/tweets/?offset=0&limit=10${
           topic !== `none` ? `&filter_topic=${topic}` : ""
         }`
       )
@@ -36,21 +36,19 @@ const Tweets = () => {
         console.log(data);
         setDataList(data);
       });
-  }, [offset, reload, topic]);
+  }, [reload, topic]);
 
   useEffect(() => {
     const current_descrip =
       topic !== "none"
         ? columns.filter((column) => column.field === topic)[0].description
         : "All tweets.";
-
     setDescription(current_descrip);
   }, [reload, topic]);
 
   const fetchData = () => {
     setOffset(offset + 10);
   };
-
   const toggleReload = () => {
     setReload(!reload);
   };
