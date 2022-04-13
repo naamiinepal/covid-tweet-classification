@@ -6,6 +6,13 @@ from sqlmodel import Integer, Session, and_, func, not_, select, text, union_all
 
 from .models import PseudoTweet, Topics, Tweet, TweetRead, TweetUpdate
 
+import nltk
+import re
+import numpy as np
+
+from . import STOP_WORDS
+
+
 # Make a Generic Type to get the original type completion back
 ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
 
@@ -158,3 +165,35 @@ def get_all_overview(session: Session):
     )
 
     return get_db_overview(session, all_model)
+
+def remove_emojis(data: str):
+    emoj = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        u"\U00002500-\U00002BEF"  # chinese char
+        u"\U00002702-\U000027B0"
+        u"\U00002702-\U000027B0"
+        u"\U000024C2-\U0001F251"
+        u"\U0001f926-\U0001f937"
+        u"\U00010000-\U0010ffff"
+        u"\u2640-\u2642" 
+        u"\u2600-\u2B55"
+        u"\u200d"
+        u"\u23cf"
+        u"\u23e9"
+        u"\u231a"
+        u"\ufe0f"  # dingbats
+        u"\u3030"
+                      "]+", re.UNICODE)
+    return re.sub(emoj, '', data)
+
+def word_tokenize_nepali(text: str):
+    text = remove_emojis(text)
+    text = re.sub(r"\d+", ' ', text) # remove any digits
+    text = re.sub(r"[,)({}[\]\.:;`_–\-``!‘’''“”?\-।/—%\|]+", ' ', text)
+    text = re.sub(r"\s+", ' ', text) # replace multiple whitespaces with single whitespace
+    text = text.replace("#", "").replace("_", " ") # remove #, and break words containing underscore
+    text_tokens = [token for token in nltk.tokenize.word_tokenize(text) if token not in STOP_WORDS]
+    return np.array(text_tokens)
