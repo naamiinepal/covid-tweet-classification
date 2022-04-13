@@ -36,7 +36,7 @@ const Tweets = () => {
         console.log(data);
         setDataList(data);
       });
-  }, [offset, reload, topic]);
+  }, [reload, topic]);
 
   useEffect(() => {
     const current_descrip =
