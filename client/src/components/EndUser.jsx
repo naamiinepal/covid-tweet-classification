@@ -4,16 +4,17 @@ import Purpose from "./Purpose";
 import Tweets from "./Tweets";
 
 const EndUser = () => {
-    return (
-        <div>
-            <Nav />
-            <div className=" bg-blue-50">
-                <Purpose />
-                <LineChart />
-                <Tweets />
-            </div>
-        </div>
-    );
+  return (
+    <div>
+      <Nav />
+      <div className=" bg-blue-50">
+        <Purpose />
+        {/* <Worker /> */}
+        <LineChart />
+        <Tweets />
+      </div>
+    </div>
+  );
 };
 
 export default EndUser;
