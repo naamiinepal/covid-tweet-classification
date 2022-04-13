@@ -14,7 +14,11 @@ greenlet==1.1.2
 h11==0.13.0
 idna==3.3
 iniconfig==1.1.1
+joblib==1.1.0
+nltk==3.7
+numpy==1.22.3
 packaging==21.3
+pandas==1.4.2
 passlib==1.7.4
 pluggy==1.0.0
 py==1.11.0
@@ -23,8 +27,11 @@ pydantic==1.9.0
 PyJWT==2.3.0
 pyparsing==3.0.8
 pytest==7.1.1
+python-dateutil==2.8.2
 python-dotenv==0.20.0
 python-multipart==0.0.5
+pytz==2022.1
+regex==2022.3.15
 requests==2.27.1
 six==1.16.0
 sniffio==1.2.0
@@ -33,6 +40,8 @@ sqlalchemy2-stubs==0.0.2a21
 sqlmodel==0.0.6
 starlette==0.17.1
 toml==0.10.2
+tomli==2.0.1
+tqdm==4.64.0
 typing_extensions==4.1.1
 urllib3==1.26.9
 uvicorn==0.17.6
