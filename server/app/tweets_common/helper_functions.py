@@ -1,8 +1,10 @@
-from typing import Any, Callable, Optional, Tuple, TypeVar
+from datetime import date
+from typing import Any, Callable, List, Optional, Tuple, TypeVar
 
 from fastapi import HTTPException
 from pydantic import PositiveInt
 from sqlmodel import Integer, Session, and_, func, not_, select, text, union_all
+from sqlmodel.sql.expression import Select
 
 from .models import PseudoTweet, Topics, Tweet, TweetRead, TweetUpdate
 
@@ -10,25 +12,37 @@ from .models import PseudoTweet, Topics, Tweet, TweetRead, TweetUpdate
 ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
 
 
-def get_filtered_selection(filter_topic: Optional[Topics], Model: ModelType):
+def get_filtered_selection(
+    topics: Optional[List[Topics]],
+    day: Optional[date],
+    Model: ModelType,
+):
     """
-    Get selection query with filter depending upon filter_topic
+    Get selection query with filter depending upon topics provided
     """
+
     selection = get_scalar_select(Model)
 
-    if filter_topic is not None:
-        filter = (
-            text(
-                Topics.others
-            )  # Since others is defined in the selection, directly provide the column
-            if filter_topic == Topics.others
-            else getattr(Model, filter_topic)
-        )
+    if topics is not None:
+        if Topics.others in topics:
+            if len(topics) > 1:
+                raise HTTPException(400, "Can't filter by others and other topics.")
+
+            # Since others is defined in the selection, directly provide the column
+            filter = text(Topics.others)
+        else:
+
+            filter = and_(*tuple(getattr(Model, topic) for topic in topics))
+
         selection = selection.filter(filter)
+
+    if day is not None:
+        selection = selection.filter(func.date(Model.created_at) == day)
+
     return selection
 
 
-def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> dict:
+def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> tuple:
     """
     Get a not-None tweet from the database with others column as a dictonary
     """
@@ -41,7 +55,7 @@ def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> di
     return tweet
 
 
-def make_tweet_read(tweet: ModelType, others: bool):
+def make_tweet_read(tweet: ModelType, others: bool) -> TweetRead:
     """
     Make a TweetRead object from a Tweet or PseudoTweet row
     """
@@ -72,7 +86,7 @@ def assert_not_null(tweet: Optional[ModelType], id: PositiveInt, Model: ModelTyp
         raise HTTPException(404, f"{Model.__name__} with id: {id} not found.")
 
 
-def get_scalar_select(Model: ModelType):
+def get_scalar_select(Model: ModelType) -> Select[tuple]:
     """
     Get a select statement for the Model with others column
     """
@@ -88,7 +102,12 @@ def get_scalar_select(Model: ModelType):
     return select(*scalar_tweet_attr, others_column)
 
 
-def map_tweet_update(mapper_func: Callable[[str], Any]):
+MapperReturnType = TypeVar("MapperReturnType")
+
+
+def map_tweet_update(
+    mapper_func: Callable[[str], MapperReturnType]
+) -> Tuple[MapperReturnType, ...]:
     """
     Return a tuple after mapping TweetUpdate fields (numeric fields)
     to mapper_func
@@ -110,7 +129,7 @@ def get_others_column(Model: ModelType):
     return and_(*map_tweet_update(negate_columns)).label("others")
 
 
-def get_db_overview(session: Session, Model: ModelType):
+def get_db_overview(session: Session, Model: ModelType) -> List[tuple]:
     """
     Get overview of the database for the given Model
     """
@@ -121,7 +140,9 @@ def get_db_overview(session: Session, Model: ModelType):
         """
         return func.sum(getattr(Model, column), type_=Integer).label(column)
 
-    created_date = func.date(Model.created_at).label("created_date")
+    created_date_label = "created_date"
+    created_date = func.date(Model.created_at).label(created_date_label)
+
     others_column = get_others_column(Model)
 
     return session.exec(
@@ -129,7 +150,9 @@ def get_db_overview(session: Session, Model: ModelType):
             *map_tweet_update(get_overview_column),
             func.sum(others_column, type_=Integer).label("others"),
             created_date,
-        ).group_by(created_date)
+        ).group_by(
+            text(created_date_label)
+        )  # Created_date is already defined
     ).all()
 
 
@@ -138,7 +161,7 @@ def get_all_overview(session: Session):
     Get overview of the database for Tweet and PseudoTweet combined
     """
 
-    def get_overview_selection(Model: ModelType):
+    def get_overview_selection(Model: ModelType) -> Select[tuple]:
         """
         Get the selection statement with numeric columns only and created_at
         """

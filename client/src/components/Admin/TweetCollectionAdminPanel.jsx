@@ -26,7 +26,7 @@ const TweetCollectionAdminPanel = ({ action }) => {
         `/${
           action === "verify" ? "pseudo_tweets" : "tweets"
         }/?offset=${offset}&limit=10${
-          topic !== `none` ? `&filter_topic=${topic}` : ""
+          topic !== `none` ? `&topics=${topic}` : ""
         }&maximize_labels=false`
       )
       .then((data) => data.data)
@@ -35,9 +35,11 @@ const TweetCollectionAdminPanel = ({ action }) => {
         setDataList(data);
       });
   }, [offset, topic, reload, action]);
+  
   const toggleReload = () => {
     setReload(!reload);
   };
+  
   return (
     <div className=" mt-10 w-11/12 mx-auto ">
       <Selection
@@ -91,7 +93,7 @@ const TweetCollectionAdminPanel = ({ action }) => {
                 key={index}
                 row={{ ...row }}
                 action={action}
-                verified={!!row["verified_at"]}
+                verified={Boolean(row["verified_at"])}
               />
             ))}
           </TableBody>

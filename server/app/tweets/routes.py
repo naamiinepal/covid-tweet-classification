@@ -1,6 +1,7 @@
+from datetime import date
 from typing import List, Optional
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Query
 from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Session
 
@@ -32,13 +33,14 @@ def get_tweet_overview(session: Session = Depends(get_session)):
 def read_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
-    filter_topic: Optional[Topics] = None,
+    topics: Optional[List[Topics]] = Query(None),
+    day: Optional[date] = None,
     session: Session = Depends(get_session),
 ):
     """
     Read tweets within the offset and limit
     """
-    selection = get_filtered_selection(filter_topic, Tweet)
+    selection = get_filtered_selection(topics, day, Tweet)
 
     tweets = session.exec(
         selection.order_by(Tweet.id.desc()).offset(offset).limit(limit)

@@ -15,7 +15,7 @@ const Tweets = () => {
     axios
       .get(
         `/tweets/?offset=${offset}&limit=10${
-          topic !== `none` ? `&filter_topic=${topic}` : ""
+          topic !== `none` ? `&topics=${topic}` : ""
         }`
       )
       .then((data) => data.data)
@@ -28,7 +28,7 @@ const Tweets = () => {
     axios
       .get(
         `/tweets/?offset=0&limit=10${
-          topic !== `none` ? `&filter_topic=${topic}` : ""
+          topic !== `none` ? `&topics=${topic}` : ""
         }`
       )
       .then((data) => data.data)
