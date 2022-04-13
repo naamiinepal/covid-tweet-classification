@@ -18,25 +18,23 @@ def get_filtered_selection(
     Model: ModelType,
 ):
     """
-    Get selection query with filter depending upon filter_topic
+    Get selection query with filter depending upon topics provided
     """
-
-    # Fail early
-    if topics is not None and Topics.others in topics and len(topics) > 1:
-        raise HTTPException(400, "Can't filter by others and other topics.")
 
     selection = get_scalar_select(Model)
 
     if topics is not None:
-        for topic in topics:
-            filter = (
-                text(
-                    Topics.others
-                )  # Since others is defined in the selection, directly provide the column
-                if topic == Topics.others
-                else getattr(Model, topic)
-            )
-            selection = selection.filter(filter)
+        if Topics.others in topics:
+            if len(topics) > 1:
+                raise HTTPException(400, "Can't filter by others and other topics.")
+
+            # Since others is defined in the selection, directly provide the column
+            filter = text(Topics.others)
+        else:
+
+            filter = and_(*tuple(getattr(Model, topic) for topic in topics))
+
+        selection = selection.filter(filter)
 
     if day is not None:
         selection = selection.filter(func.date(Model.created_at) == day)
