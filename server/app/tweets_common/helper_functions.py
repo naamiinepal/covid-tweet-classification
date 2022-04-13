@@ -1,8 +1,10 @@
-from typing import Any, Callable, Optional, Tuple, TypeVar
+from datetime import date
+from typing import Any, Callable, List, Optional, Tuple, TypeVar
 
 from fastapi import HTTPException
 from pydantic import PositiveInt
 from sqlmodel import Integer, Session, and_, func, not_, select, text, union_all
+from sqlmodel.sql.expression import Select
 
 from .models import PseudoTweet, Topics, Tweet, TweetRead, TweetUpdate
 
@@ -10,21 +12,35 @@ from .models import PseudoTweet, Topics, Tweet, TweetRead, TweetUpdate
 ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
 
 
-def get_filtered_selection(filter_topic: Optional[Topics], Model: ModelType):
+def get_filtered_selection(
+    topics: Optional[List[Topics]],
+    day: Optional[date],
+    Model: ModelType,
+):
     """
     Get selection query with filter depending upon filter_topic
     """
+
+    # Fail early
+    if topics is not None and Topics.others in topics and len(topics) > 1:
+        raise HTTPException(400, "Can't filter by others and other topics.")
+
     selection = get_scalar_select(Model)
 
-    if filter_topic is not None:
-        filter = (
-            text(
-                Topics.others
-            )  # Since others is defined in the selection, directly provide the column
-            if filter_topic == Topics.others
-            else getattr(Model, filter_topic)
-        )
-        selection = selection.filter(filter)
+    if topics is not None:
+        for topic in topics:
+            filter = (
+                text(
+                    Topics.others
+                )  # Since others is defined in the selection, directly provide the column
+                if topic == Topics.others
+                else getattr(Model, topic)
+            )
+            selection = selection.filter(filter)
+
+    if day is not None:
+        selection = selection.filter(func.date(Model.created_at) == day)
+
     return selection
 
 
@@ -72,7 +88,7 @@ def assert_not_null(tweet: Optional[ModelType], id: PositiveInt, Model: ModelTyp
         raise HTTPException(404, f"{Model.__name__} with id: {id} not found.")
 
 
-def get_scalar_select(Model: ModelType):
+def get_scalar_select(Model: ModelType) -> Select[tuple]:
     """
     Get a select statement for the Model with others column
     """
@@ -121,7 +137,8 @@ def get_db_overview(session: Session, Model: ModelType):
         """
         return func.sum(getattr(Model, column), type_=Integer).label(column)
 
-    created_date = func.date(Model.created_at).label("created_date")
+    created_date_label = "created_date"
+    created_date = func.date(Model.created_at).label(created_date_label)
     others_column = get_others_column(Model)
 
     return session.exec(
@@ -129,7 +146,9 @@ def get_db_overview(session: Session, Model: ModelType):
             *map_tweet_update(get_overview_column),
             func.sum(others_column, type_=Integer).label("others"),
             created_date,
-        ).group_by(created_date)
+        ).group_by(
+            text(created_date_label)
+        )  # Created_date is already defined
     ).all()
 
 
