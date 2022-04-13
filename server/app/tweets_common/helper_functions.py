@@ -44,7 +44,7 @@ def get_filtered_selection(
     return selection
 
 
-def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> dict:
+def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> tuple:
     """
     Get a not-None tweet from the database with others column as a dictonary
     """
@@ -57,7 +57,7 @@ def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> di
     return tweet
 
 
-def make_tweet_read(tweet: ModelType, others: bool):
+def make_tweet_read(tweet: ModelType, others: bool) -> TweetRead:
     """
     Make a TweetRead object from a Tweet or PseudoTweet row
     """
@@ -104,7 +104,12 @@ def get_scalar_select(Model: ModelType) -> Select[tuple]:
     return select(*scalar_tweet_attr, others_column)
 
 
-def map_tweet_update(mapper_func: Callable[[str], Any]):
+MapperReturnType = TypeVar("MapperReturnType")
+
+
+def map_tweet_update(
+    mapper_func: Callable[[str], MapperReturnType]
+) -> Tuple[MapperReturnType, ...]:
     """
     Return a tuple after mapping TweetUpdate fields (numeric fields)
     to mapper_func
@@ -126,7 +131,7 @@ def get_others_column(Model: ModelType):
     return and_(*map_tweet_update(negate_columns)).label("others")
 
 
-def get_db_overview(session: Session, Model: ModelType):
+def get_db_overview(session: Session, Model: ModelType) -> List[tuple]:
     """
     Get overview of the database for the given Model
     """
@@ -139,6 +144,7 @@ def get_db_overview(session: Session, Model: ModelType):
 
     created_date_label = "created_date"
     created_date = func.date(Model.created_at).label(created_date_label)
+
     others_column = get_others_column(Model)
 
     return session.exec(
@@ -157,7 +163,7 @@ def get_all_overview(session: Session):
     Get overview of the database for Tweet and PseudoTweet combined
     """
 
-    def get_overview_selection(Model: ModelType):
+    def get_overview_selection(Model: ModelType) -> Select[tuple]:
         """
         Get the selection statement with numeric columns only and created_at
         """
