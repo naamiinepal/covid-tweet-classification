@@ -26,7 +26,7 @@
     "start": "craco start",
     "build": "craco build",
     "build-to-server": "craco build && ./move_to_server.sh",
-    "test": "craco test",
+    "test": "craco test"
   },
   "eslintConfig": {
     "extends": [
