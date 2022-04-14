@@ -19,6 +19,7 @@
     "react-dom": "^17.0.2",
     "react-infinite-scroll-component": "^6.1.0",
     "react-router-dom": "^6.3.0",
+    "react-scripts": "4.0.3",
     "typescript": "^4.6.3"
   },
   "proxy": "http://127.0.0.1:8000",
@@ -26,7 +27,8 @@
     "start": "craco start",
     "build": "craco build",
     "build-to-server": "craco build && ./move_to_server.sh",
-    "test": "craco test"
+    "test": "craco test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
