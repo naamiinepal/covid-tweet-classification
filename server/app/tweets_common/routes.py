@@ -1,8 +1,8 @@
-from datetime import date, datetime, timedelta
+from datetime import date
 from typing import List, Optional
 
-from nltk import FreqDist
 from fastapi import Depends, Query
+from nltk import FreqDist
 from sqlmodel import Session, select, union_all
 
 from ..database import get_session
@@ -23,9 +23,6 @@ def get_word_cloud(
     """
     Get the word-count distribution within the given time range
     """
-    last_month = datetime.now() - timedelta(30)
-    print(last_month)
-
     fields = ("text",)
 
     tweet_selection = get_filtered_selection(topics, Tweet, day, month, fields)

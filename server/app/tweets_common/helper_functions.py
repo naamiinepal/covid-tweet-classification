@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Callable, List, Optional, Collection, Tuple, TypeVar
+from typing import Callable, Collection, List, Optional, Tuple, TypeVar
 
 from fastapi import HTTPException
 from pydantic import PositiveInt
