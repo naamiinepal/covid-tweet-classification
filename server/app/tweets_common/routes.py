@@ -1,8 +1,7 @@
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
-import nltk
-import numpy as np
+from nltk import FreqDist
 from fastapi import Depends, Query
 from sqlmodel import Session, select, union_all
 
@@ -39,9 +38,14 @@ def get_word_cloud(
     # Manually selected the text here, need to change if needed
     combined_tweets = session.exec(select(combined_model.text)).all()
 
-    tokens = tuple(map(word_tokenize_nepali, combined_tweets))
+    # It is a generator of tuples
+    two_dimensional_tokens = map(word_tokenize_nepali, combined_tweets)
 
-    tokens = np.hstack(np.array(tokens, dtype=object)).tolist()
-    word_freq = nltk.FreqDist(tokens)
+    flat_tokens: List[str] = []
+
+    for token in two_dimensional_tokens:
+        flat_tokens.extend(token)
+
+    word_freq = FreqDist(flat_tokens)
 
     return word_freq.most_common(100)

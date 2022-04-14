@@ -1,7 +1,7 @@
 import re
+from typing import AnyStr
 
-import nltk
-import numpy as np
+from nltk.tokenize import word_tokenize
 
 from . import STOP_WORDS
 
@@ -30,7 +30,7 @@ emoj_regex = re.compile(
 )
 
 
-def remove_emojis(data: str):
+def remove_emojis(data: AnyStr) -> AnyStr:
     return re.sub(emoj_regex, "", data)
 
 
@@ -44,7 +44,4 @@ def word_tokenize_nepali(text: str):
     text = text.replace("#", "").replace(
         "_", " "
     )  # remove #, and break words containing underscore
-    text_tokens = [
-        token for token in nltk.tokenize.word_tokenize(text) if token not in STOP_WORDS
-    ]
-    return np.array(text_tokens)
+    return tuple(token for token in word_tokenize(text) if token not in STOP_WORDS)
