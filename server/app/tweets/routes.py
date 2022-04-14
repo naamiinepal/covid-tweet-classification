@@ -12,10 +12,18 @@ from ..tweets_common.helper_functions import (
     get_a_tweet,
     get_combined_tweet,
     get_db_overview,
+    get_filtered_count,
     get_filtered_selection,
     make_tweet_read,
 )
-from ..tweets_common.models import Overview, Topics, Tweet, TweetRead, TweetUpdate
+from ..tweets_common.models import (
+    Overview,
+    Topics,
+    Tweet,
+    TweetCount,
+    TweetRead,
+    TweetUpdate,
+)
 from ..tweets_common.types import Month
 from . import router
 
@@ -28,6 +36,20 @@ def get_tweet_overview(session: Session = Depends(get_session)):
     """
 
     return get_db_overview(session, Tweet)
+
+
+@router.get("/count", response_model=TweetCount)
+def get_count(
+    topics: Optional[List[Topics]] = Query(None),
+    day: Optional[date] = None,
+    month: Optional[Month] = None,
+    session: Session = Depends(get_session),
+):
+    """
+    Get the count of tweets for the given filters
+    """
+
+    return get_filtered_count(Tweet, topics, day, month, session)
 
 
 @router.get("/", response_model=List[TweetRead])

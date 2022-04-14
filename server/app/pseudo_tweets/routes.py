@@ -10,9 +10,10 @@ from ..auth.models import User
 from ..database import get_session, save_and_refresh
 from ..tweets_common.helper_functions import (
     get_a_tweet,
-    get_all_overview,
+    get_combined_model,
     get_combined_tweet,
     get_db_overview,
+    get_filtered_count,
     get_filtered_selection,
     make_tweet_read,
 )
@@ -21,6 +22,7 @@ from ..tweets_common.models import (
     PseudoTweet,
     Topics,
     Tweet,
+    TweetCount,
     TweetRead,
     TweetUpdate,
 )
@@ -35,9 +37,26 @@ def get_pseudo_overview(all: bool = False, session: Session = Depends(get_sessio
     Get overview by grouping on created_at
     """
 
-    if all:
-        return get_all_overview(session)
-    return get_db_overview(session, PseudoTweet)
+    Model = get_combined_model() if all else PseudoTweet
+
+    return get_db_overview(session, Model)
+
+
+@router.get("/count", response_model=TweetCount)
+def get_count(
+    topics: Optional[List[Topics]] = Query(None),
+    day: Optional[date] = None,
+    month: Optional[Month] = None,
+    all: bool = False,
+    session: Session = Depends(get_session),
+):
+    """
+    Get the count of pseudo tweets for the given filters
+    """
+
+    Model = get_combined_model() if all else PseudoTweet
+
+    return get_filtered_count(Model, topics, day, month, session)
 
 
 @router.get("/", response_model=List[TweetRead])

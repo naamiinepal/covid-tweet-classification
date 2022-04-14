@@ -27,7 +27,7 @@ class Topics(str, Enum):
     others = "others"
 
 
-class Overview(BaseModel):
+class TweetCount(BaseModel):
     covid_stats: int
     vaccination: int
     covid_politics: int
@@ -37,6 +37,10 @@ class Overview(BaseModel):
     life_during_pandemic: int
     covid_waves_and_variants: int
     others: int
+    total: int
+
+
+class Overview(TweetCount):
     created_date: date
 
 

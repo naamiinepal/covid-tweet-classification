@@ -166,15 +166,17 @@ def get_db_overview(session: Session, Model: ModelType) -> List[tuple]:
             *map_tweet_update(get_overview_column),
             func.sum(others_column, type_=Integer).label("others"),
             created_date,
+            func.count().label("total"),
         ).group_by(
             text(created_date_label)
         )  # Created_date is already defined
     ).all()
 
 
-def get_all_overview(session: Session):
+def get_combined_model():
+
     """
-    Get overview of the database for Tweet and PseudoTweet combined
+    Get a combined model with numerics columns and created_at
     """
 
     def get_overview_selection(Model: ModelType) -> Select[tuple]:
@@ -195,5 +197,53 @@ def get_all_overview(session: Session):
         .subquery()
         .c
     )
+    return all_model
 
-    return get_db_overview(session, all_model)
+
+def get_filtered_count(
+    Model: ModelType,
+    topics: Optional[Collection[Topics]],
+    day: Optional[date],
+    month: Optional[Month],
+    session: Session,
+):
+    def get_sum_column(column: str):
+        """
+        Get a column for the selection of the overview
+        """
+        # May return None if there are no matching rows to filters.
+        # So, colascing NULL to 0.
+        return func.coalesce(func.sum(getattr(Model, column), type_=Integer), 0).label(
+            column
+        )
+
+    others_column = get_others_column(Model)
+
+    selection = select(
+        *map_tweet_update(get_sum_column),
+        func.coalesce(func.sum(others_column, type_=Integer), 0).label("others"),
+        func.count().label("total"),
+    )
+
+    if topics is not None:
+        if Topics.others in topics:
+            if len(topics) > 1:
+                raise HTTPException(400, "Can't filter by others and other topics.")
+
+            # If others is defined in the selection, directly provide the column
+            filter = text(Topics.others)
+        else:
+            filter = and_(*tuple(getattr(Model, topic) for topic in topics))
+
+        selection = selection.filter(filter)
+
+    if day is not None or month is not None:
+        # If both specified, use day only
+        filter = (
+            func.date(Model.created_at) == day
+            if day is not None
+            else func.strftime("%Y-%m", Model.created_at) == month
+        )
+        selection = selection.filter(filter)
+
+    return session.exec(selection).one()
