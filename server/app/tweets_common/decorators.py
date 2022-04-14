@@ -1,15 +1,9 @@
 from functools import lru_cache, wraps
 from time import monotonic_ns
+from typing import Callable
 
-from typing import Optional
 
-
-def timed_lru_cache(
-    _func=None, *, 
-    seconds: Optional[int] = 600, 
-    maxsize: Optional[int] = 128, 
-    typed: Optional[bool] = False
-):
+def timed_lru_cache(seconds: int = 600, maxsize: int = 128, typed: bool = False):
     """Extension of functools lru_cache with a timeout
 
     Parameters:
@@ -19,9 +13,9 @@ def timed_lru_cache(
 
     """
 
-    def wrapper_cache(f):
+    def wrapper_cache(f: Callable):
         f = lru_cache(maxsize=maxsize, typed=typed)(f)
-        f.delta = seconds * 10 ** 9
+        f.delta = seconds * 10**9
         f.expiration = monotonic_ns() + f.delta
 
         @wraps(f)
@@ -35,8 +29,4 @@ def timed_lru_cache(
         wrapped_f.cache_clear = f.cache_clear
         return wrapped_f
 
-    # To allow decorator to be used without arguments
-    if _func is None:
-        return wrapper_cache
-    else:
-        return wrapper_cache(_func)
+    return wrapper_cache
