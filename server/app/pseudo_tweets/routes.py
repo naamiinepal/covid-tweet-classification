@@ -53,7 +53,7 @@ def read_pseudo_tweets(
     """
     Read pseudo tweets within the offset and limit
     """
-    selection = get_filtered_selection(topics, day, month, PseudoTweet)
+    selection = get_filtered_selection(topics, PseudoTweet, day, month)
 
     # others should be exclusively provided, hence the last check
     is_others = topics is not None and len(topics) and topics[0] == Topics.others

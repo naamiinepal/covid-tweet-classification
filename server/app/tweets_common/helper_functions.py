@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Callable, List, Optional, Tuple, TypeVar
+from typing import Callable, Collection, List, Optional, Tuple, TypeVar
 
 from fastapi import HTTPException
 from pydantic import PositiveInt
@@ -14,11 +14,11 @@ ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
 
 
 def get_filtered_selection(
-    topics: Optional[List[Topics]],
-    day: Optional[date],
-    month: Optional[Month],
+    topics: Optional[Collection[Topics]],
     Model: ModelType,
-    fields: Optional[List[str]] = None,
+    day: Optional[date] = None,
+    month: Optional[Month] = None,
+    fields: Optional[Collection[str]] = None,
 ):
     """
     Get selection query with filter depending upon topics provided
@@ -99,7 +99,7 @@ def assert_not_null(tweet: Optional[ModelType], id: PositiveInt, Model: ModelTyp
 
 
 def get_scalar_select(
-    Model: ModelType, fields: Optional[List[str]] = None
+    Model: ModelType, fields: Optional[Collection[str]] = None
 ) -> Select[tuple]:
     """
     Get a select statement for the Model with others column

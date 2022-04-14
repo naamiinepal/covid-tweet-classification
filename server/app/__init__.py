@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from .auth import router as auth_router
 from .pseudo_tweets import router as pseudo_router
 from .tweets import router as tweets_router
+from .tweets_common import router as tweets_common_router
 
 from .database import create_tables  # isort: skip
 
@@ -27,6 +28,7 @@ def on_startup():
 app.include_router(auth_router)
 app.include_router(pseudo_router)
 app.include_router(tweets_router)
+app.include_router(tweets_common_router)
 
 
 # Cache the output for maximum 10 items
