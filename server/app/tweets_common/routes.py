@@ -15,7 +15,7 @@ from .word_cloud_helper import word_tokenize_nepali
 
 
 @router.get("/")
-async def get_word_cloud(
+def get_word_cloud(
     topics: Optional[List[Topics]] = Query(None),
     day: Optional[date] = None,
     month: Optional[Month] = None,
