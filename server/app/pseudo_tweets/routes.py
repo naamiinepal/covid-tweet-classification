@@ -1,6 +1,7 @@
+from datetime import date
 from typing import List, Optional
 
-from fastapi import Depends
+from fastapi import Depends, Query
 from pydantic import NonNegativeInt, PositiveInt, conint
 from sqlmodel import Session
 
@@ -23,6 +24,7 @@ from ..tweets_common.models import (
     TweetRead,
     TweetUpdate,
 )
+from ..tweets_common.types import Month
 from . import router
 
 
@@ -42,24 +44,29 @@ def get_pseudo_overview(all: bool = False, session: Session = Depends(get_sessio
 def read_pseudo_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
-    filter_topic: Optional[Topics] = None,
+    topics: Optional[List[Topics]] = Query(None),
+    day: Optional[date] = None,
+    month: Optional[Month] = Query(None, description="Month in %Y-%m format"),
     maximize_labels: bool = False,
     session: Session = Depends(get_session),
 ):
     """
     Read pseudo tweets within the offset and limit
     """
-    selection = get_filtered_selection(filter_topic, PseudoTweet)
+    selection = get_filtered_selection(topics, day, month, PseudoTweet)
+
+    # others should be exclusively provided, hence the last check
+    is_others = topics is not None and len(topics) and topics[0] == Topics.others
 
     # No need to maximize labels if sorted by others
-    if maximize_labels and filter_topic != Topics.others:
+    if maximize_labels and not is_others:
 
         def get_model_attr(attr: str):
             """Get attr of PseudoTweet"""
             return getattr(PseudoTweet, attr)
 
-        labels_sum = tuple(map(get_model_attr, TweetUpdate.__fields__))
-        selection = selection.order_by(sum(labels_sum[1:], labels_sum[0]).desc())
+        first, *rest = tuple(map(get_model_attr, TweetUpdate.__fields__))
+        selection = selection.order_by(sum(rest, first).desc())
     tweets = session.exec(selection.offset(offset).limit(limit)).all()
     return tweets
 

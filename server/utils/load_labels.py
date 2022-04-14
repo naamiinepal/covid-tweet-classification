@@ -6,9 +6,8 @@ from typing import List, Mapping, Union
 from sqlmodel import Session, select
 
 from app.auth.models import User
-from app.tweets_common.models import Tweet
-
 from app.database import get_session
+from app.tweets_common.models import Tweet
 
 
 def load_database(write_session: Session):
