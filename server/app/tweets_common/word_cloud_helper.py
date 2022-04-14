@@ -1,9 +1,13 @@
 import re
-from typing import AnyStr
+from typing import AnyStr, List
 
+from nltk import FreqDist
 from nltk.tokenize import word_tokenize
 
 from . import STOP_WORDS
+
+from .decorators import timed_lru_cache
+
 
 emoj_regex = re.compile(
     "["
@@ -45,3 +49,26 @@ def word_tokenize_nepali(text: str):
         "_", " "
     )  # remove #, and break words containing underscore
     return tuple(token for token in word_tokenize(text) if token not in STOP_WORDS)
+
+
+# cache 64 different results for half-a-day
+@timed_lru_cache(seconds = 43200, maxsize=64, typed=True)
+def get_word_count_distribution(
+    tweets: tuple[str]
+):
+    """
+    Get the word-count distribution from a tuple of tweets.
+    Here tweets is a tuple, this is hashable while caching.
+    """
+    
+    # It is a generator of tuples
+    two_dimensional_tokens = map(word_tokenize_nepali, tweets)
+
+    flat_tokens: List[str] = []
+
+    for token in two_dimensional_tokens:
+        flat_tokens.extend(token)
+
+    word_freq = FreqDist(flat_tokens)
+
+    return word_freq.most_common(100)
