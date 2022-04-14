@@ -1,10 +1,10 @@
 from fastapi import APIRouter
-import os
 
-router = APIRouter(prefix="/commons", tags=["commons"])
+router = APIRouter(prefix="/tweets_commons", tags=["tweets_commons"])
+
 # get all the stopwords
-with open("stopwords.txt", mode='r') as fp:
-    STOP_WORDS = set(line.strip() for line in fp)
+with open("stopwords.txt") as fp:
+    STOP_WORDS = set(fp.read().splitlines())
 
 # Import all routes
 from . import routes  # noqa

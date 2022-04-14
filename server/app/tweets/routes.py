@@ -42,7 +42,7 @@ def read_tweets(
     """
     Read tweets within the offset and limit
     """
-    selection = get_filtered_selection(topics, day, month, Tweet)
+    selection = get_filtered_selection(topics, Tweet, day, month)
 
     tweets = session.exec(
         selection.order_by(Tweet.id.desc()).offset(offset).limit(limit)

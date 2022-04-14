@@ -1,24 +1,24 @@
-import pandas as pd
-import numpy as np
+from datetime import date, datetime, timedelta
+from typing import List, Optional
+
 import nltk
+import numpy as np
+from fastapi import Depends, Query
+from sqlmodel import Session, select, union_all
 
-
-from typing import Optional
-
-from fastapi import Depends
-from sqlmodel import Session
-from datetime import date, timedelta, datetime
-
-from .models import Tweet, Topics, PseudoTweet
-from . import router
 from ..database import get_session
-from .helper_functions import get_filtered_selection, word_tokenize_nepali
+from . import router
+from .helper_functions import get_filtered_selection
+from .models import PseudoTweet, Topics, Tweet
+from .types import Month
+from .word_cloud_helper import word_tokenize_nepali
 
 
 @router.get("/")
 async def get_word_cloud(
-    filter_topic: Optional[Topics] = None,
-    filter_date: Optional[date] = None,  # still need to work on this
+    topics: Optional[List[Topics]] = Query(None),
+    day: Optional[date] = None,
+    month: Optional[Month] = None,
     session: Session = Depends(get_session),
 ):
     """
@@ -27,13 +27,20 @@ async def get_word_cloud(
     last_month = datetime.now() - timedelta(30)
     print(last_month)
 
-    selection_tweet = get_filtered_selection(filter_topic, Tweet, ["text"])
-    tweets = session.exec(selection_tweet).all()
+    fields = ("text",)
 
-    selection_pseudo_tweet = get_filtered_selection(filter_topic, PseudoTweet, ["text"])
-    pseudo_tweets = session.exec(selection_pseudo_tweet).all()
+    tweet_selection = get_filtered_selection(topics, Tweet, day, month, fields)
+    pseudo_tweet_selection = get_filtered_selection(
+        topics, PseudoTweet, day, month, fields
+    )
 
-    tokens = [await word_tokenize_nepali(elem) for elem in tweets + pseudo_tweets]
+    combined_model = union_all(tweet_selection, pseudo_tweet_selection).subquery().c
+
+    # Manually selected the text here, need to change if needed
+    combined_tweets = session.exec(select(combined_model.text)).all()
+
+    tokens = tuple(map(word_tokenize_nepali, combined_tweets))
+
     tokens = np.hstack(np.array(tokens, dtype=object)).tolist()
     word_freq = nltk.FreqDist(tokens)
 

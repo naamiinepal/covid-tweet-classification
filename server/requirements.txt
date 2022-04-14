@@ -18,7 +18,6 @@ joblib==1.1.0
 nltk==3.7
 numpy==1.22.3
 packaging==21.3
-pandas==1.4.2
 passlib==1.7.4
 pluggy==1.0.0
 py==1.11.0
