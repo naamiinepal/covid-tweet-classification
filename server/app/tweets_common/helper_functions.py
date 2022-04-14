@@ -18,20 +18,25 @@ def get_filtered_selection(
     day: Optional[date],
     month: Optional[Month],
     Model: ModelType,
+    fields: Optional[List[str]] = None,
 ):
     """
     Get selection query with filter depending upon topics provided
     """
 
-    selection = get_scalar_select(Model)
+    selection = get_scalar_select(Model, fields)
 
     if topics is not None:
         if Topics.others in topics:
             if len(topics) > 1:
                 raise HTTPException(400, "Can't filter by others and other topics.")
 
-            # Since others is defined in the selection, directly provide the column
-            filter = text(Topics.others)
+            # If others is defined in the selection, directly provide the column
+            filter = (
+                text(Topics.others)
+                if fields is None or not len(fields) or "others" in fields
+                else get_others_column(Model)
+            )
         else:
             filter = and_(*tuple(getattr(Model, topic) for topic in topics))
 
@@ -93,20 +98,24 @@ def assert_not_null(tweet: Optional[ModelType], id: PositiveInt, Model: ModelTyp
         raise HTTPException(404, f"{Model.__name__} with id: {id} not found.")
 
 
-def get_scalar_select(Model: ModelType) -> Select[tuple]:
+def get_scalar_select(
+    Model: ModelType, fields: Optional[List[str]] = None
+) -> Select[tuple]:
     """
     Get a select statement for the Model with others column
     """
 
-    def get_model_attr(field: str):
-        """
-        Convert a field to Model.field
-        """
-        return getattr(Model, field)
+    is_fields_empty = fields is None or not len(fields)
 
-    others_column = get_others_column(Model)
-    scalar_tweet_attr = tuple(map(get_model_attr, Model.__fields__))
-    return select(*scalar_tweet_attr, others_column)
+    if is_fields_empty:
+        fields = Model.__fields__
+
+    db_fields = list(getattr(Model, field) for field in fields)
+
+    if is_fields_empty or "others" in fields:
+        db_fields.append(get_others_column(Model))
+
+    return select(*db_fields)
 
 
 MapperReturnType = TypeVar("MapperReturnType")
