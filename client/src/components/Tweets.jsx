@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { columns } from "../constants";
+import { useFilter } from "./FilterProvider";
 import Selection from "./Selection";
 import Tweet from "./Tweet";
 const Tweets = () => {
@@ -10,33 +11,41 @@ const Tweets = () => {
   const [offset, setOffset] = useState(0);
   const [topic, setTopic] = useState("none");
   const [reload, setReload] = useState(true);
+  let { year, month } = useFilter();
+
   const [description, setDescription] = useState("All tweets.");
   useEffect(() => {
+    let params = { offset: offset, limit: 10 };
+    if (year !== "none" && month !== "none") {
+      params["month"] = `${year}-${month}`;
+    }
+    if (topic !== "none") {
+      params["topics"] = topic;
+    }
     axios
-      .get(
-        `/tweets/?offset=${offset}&limit=10${
-          topic !== `none` ? `&topics=${topic}` : ""
-        }`
-      )
+      .get(`/tweets/`, { params })
       .then((data) => data.data)
       .then((data) => {
         console.log(data);
         setDataList((dl) => [...dl, ...data]);
       });
-  }, [offset, topic]);
+  }, [offset, topic, year, month]);
   useEffect(() => {
+    let params = { offset: 0, limit: 10 };
+    if (topic !== "none") {
+      params["topics"] = topic;
+    }
+    if (year !== "none" && month !== "none") {
+      params["month"] = `${year}-${month}`;
+    }
     axios
-      .get(
-        `/tweets/?offset=0&limit=10${
-          topic !== `none` ? `&topics=${topic}` : ""
-        }`
-      )
+      .get(`/tweets/`, { params })
       .then((data) => data.data)
       .then((data) => {
         console.log(data);
         setDataList(data);
       });
-  }, [reload, topic]);
+  }, [reload, topic, year, month]);
 
   useEffect(() => {
     const current_descrip =

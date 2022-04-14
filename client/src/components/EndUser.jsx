@@ -1,3 +1,4 @@
+import FilteredContainer from "./FilteredContainer";
 import LineChart from "./LineChart";
 import Nav from "./Nav";
 import Purpose from "./Purpose";
@@ -11,8 +12,7 @@ const EndUser = () => {
       <div className=" bg-blue-50">
         <Purpose />
         {/* <Worker /> */}
-        <LineChart />
-        <Tweets />
+        <FilteredContainer />
         {/* <Team /> */}
       </div>
     </div>

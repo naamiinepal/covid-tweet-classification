@@ -3,12 +3,14 @@ import Admin from './components/Admin';
 import TweetCollectionAdminPanel from './components/Admin/TweetCollectionAdminPanel';
 import AuthProvider from './components/AuthProvider';
 import EndUser from './components/EndUser';
+import FilterProvider from './components/FilterProvider';
 import Login from './components/Login';
 import RequireAuth from './components/RequireAuth';
 
 function App() {
   return (
     <AuthProvider>
+      <FilterProvider>
    <Routes>
      <Route path="/" element={<EndUser />} />
      <Route path="/login" element={<Login />} />
@@ -30,6 +32,7 @@ function App() {
         />
             </Route>
    </Routes>
+   </FilterProvider>
     </AuthProvider>
   );
 }
