@@ -2,58 +2,77 @@ import { Card } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { columns } from "../constants";
 import { useFilter } from "./FilterProvider";
 import Selection from "./Selection";
 import Tweet from "./Tweet";
 const Tweets = () => {
   const [dataList, setDataList] = useState([]);
   const [offset, setOffset] = useState(0);
-  const [topic, setTopic] = useState("none");
+  const [topics, setTopics] = useState([]);
   const [reload, setReload] = useState(true);
   let { year, month } = useFilter();
 
   const [description, setDescription] = useState("All tweets.");
+
   useEffect(() => {
-    let params = { offset: offset, limit: 10 };
+    setDataList([]);
+  }, [year, month, topics.length]);
+
+  useEffect(() => {
+    // let params = { offset: offset, limit: 10 };
+    let params = new URLSearchParams([
+      ["offset", offset],
+      ["limit", 10],
+    ]);
     if (year !== "none" && month !== "none") {
-      params["month"] = `${year}-${month}`;
+      params.append("month", `${year}-${month}`);
     }
-    if (topic !== "none") {
-      params["topics"] = topic;
+    if (topics.length !== 0) {
+      topics.forEach((topic) => {
+        params.append("topics", topic);
+      });
     }
     axios
-      .get(`/tweets/`, { params })
+      .get(`/tweets/`, {
+        params,
+      })
       .then((data) => data.data)
       .then((data) => {
         console.log(data);
         setDataList((dl) => [...dl, ...data]);
       });
-  }, [offset, topic, year, month]);
-  useEffect(() => {
-    let params = { offset: 0, limit: 10 };
-    if (topic !== "none") {
-      params["topics"] = topic;
-    }
-    if (year !== "none" && month !== "none") {
-      params["month"] = `${year}-${month}`;
-    }
-    axios
-      .get(`/tweets/`, { params })
-      .then((data) => data.data)
-      .then((data) => {
-        console.log(data);
-        setDataList(data);
-      });
-  }, [reload, topic, year, month]);
+  }, [offset, topics.length, year, month]);
+  // useEffect(() => {
+  //   let params = new URLSearchParams([
+  //     ["offset", 0],
+  //     ["limit", 10],
+  //   ]);
+  //   if (year !== "none" && month !== "none") {
+  //     params.append("month", `${year}-${month}`);
+  //   }
+  //   if (topics.length !== 0) {
+  //     topics.forEach((topic) => {
+  //       params.append("topics", topic);
+  //     });
+  //   }
+  //   axios
+  //     .get(`/tweets/`, {
+  //       params,
+  //     })
+  //     .then((data) => data.data)
+  //     .then((data) => {
+  //       console.log(data);
+  //       setDataList(data);
+  //     });
+  // }, [reload, topics.length, year, month]);
 
-  useEffect(() => {
-    const current_descrip =
-      topic !== "none"
-        ? columns.filter((column) => column.field === topic)[0].description
-        : "All tweets.";
-    setDescription(current_descrip);
-  }, [reload, topic]);
+  // useEffect(() => {
+  //   const current_descrip =
+  //     topics !== "none"
+  //       ? columns.filter((column) => column.field === topics)[0].description
+  //       : "All tweets.";
+  //   setDescription(current_descrip);
+  // }, [reload, topics]);
 
   const fetchData = () => {
     setOffset(offset + 10);
@@ -71,10 +90,10 @@ const Tweets = () => {
         <Selection
           offset={offset}
           setOffset={setOffset}
-          topic={topic}
+          topic={topics}
           toggleReload={toggleReload}
           endUser={true}
-          setTopic={setTopic}
+          setTopic={setTopics}
         />
         <div className="text-base">{description}</div>
       </Card>
