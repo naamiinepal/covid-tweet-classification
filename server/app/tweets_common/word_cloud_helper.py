@@ -1,11 +1,11 @@
 import re
+from functools import lru_cache
 from typing import List, Tuple
 
 from nltk import FreqDist
 from nltk.tokenize import word_tokenize
 
 from . import STOP_WORDS
-from .decorators import timed_lru_cache
 
 emoj_regex = re.compile(
     "["
@@ -31,13 +31,15 @@ emoj_regex = re.compile(
     re.UNICODE,
 )
 
+unusual_chars_regex = re.compile(r"[,)({}[\]\.:;`_–\-``!‘’''“”?\-।/—%\|]+")
+
 
 def word_tokenize_nepali(text: str):
     # Remove emojis
     text = re.sub(emoj_regex, "", text)
 
     text = re.sub(r"\d+", " ", text)  # remove any digits
-    text = re.sub(r"[,)({}[\]\.:;`_–\-``!‘’''“”?\-।/—%\|]+", " ", text)
+    text = re.sub(unusual_chars_regex, " ", text)
     text = re.sub(
         r"\s+", " ", text
     )  # replace multiple whitespaces with single whitespace
@@ -47,12 +49,14 @@ def word_tokenize_nepali(text: str):
     return tuple(token for token in word_tokenize(text) if token not in STOP_WORDS)
 
 
-# cache 64 different results for half-a-day
-@timed_lru_cache(seconds=43200, maxsize=64)
+# cache 64 different results
+@lru_cache(maxsize=64)
 def get_word_count_distribution(tweets: Tuple[str]):
     """
     Get the word-count distribution from a tuple of tweets.
     Here tweets is a tuple, this is hashable while caching.
+
+    Note: This function is deterministic so no timeout is used for caching
     """
 
     # It is a generator of tuples
