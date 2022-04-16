@@ -5,6 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useFilter } from "./FilterProvider";
 import Selection from "./Selection";
 import Tweet from "./Tweet";
+import WordCloud from "./WordCloud";
 const Tweets = () => {
   const [dataList, setDataList] = useState([]);
   const [offset, setOffset] = useState(0);
@@ -95,6 +96,7 @@ const Tweets = () => {
           endUser={true}
           setTopic={setTopics}
         />
+        <WordCloud />
         {/* <div className="text-base">{description}</div> */}
       </Card>
       <div className="w-3/4 overflow-y-auto">

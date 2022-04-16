@@ -10,7 +10,8 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { columns } from "../../constants";
-import Selection from "../Selection";
+// import Selection from "../Selection";
+import SelectionAdmin from "./SelectionAdmin";
 import Tweet from "./Tweet";
 // const buttonRef = React.createRef();
 
@@ -35,14 +36,14 @@ const TweetCollectionAdminPanel = ({ action }) => {
         setDataList(data);
       });
   }, [offset, topic, reload, action]);
-  
+
   const toggleReload = () => {
     setReload(!reload);
   };
-  
+
   return (
     <div className=" mt-10 w-11/12 mx-auto ">
-      <Selection
+      <SelectionAdmin
         offset={offset}
         setOffset={setOffset}
         topic={topic}
