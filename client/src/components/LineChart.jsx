@@ -102,6 +102,18 @@ const fetchLabels = async (year, month) =>
     .then((data) => data.data)
     .then((data) => {
       const finalData = {};
+      if (data) {
+        console.log(data[0].created_date.substring(5, 7));
+
+        if (year !== "none" && month !== "none") {
+          data = data.filter(
+            (datum) =>
+              parseInt(datum.created_date.substring(0, 4)) === parseInt(year) &&
+              parseInt(datum.created_date.substring(5, 7)) === parseInt(month)
+          );
+        }
+      }
+
       const covid_stats = data.map((datum) => datum.covid_stats);
       const vaccination = data.map((datum) => datum.vaccination);
       const covid_politics = data.map((datum) => datum.covid_politics);
