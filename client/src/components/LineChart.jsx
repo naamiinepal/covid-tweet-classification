@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
-import { Button, Card } from "@mui/material";
+import { Card } from "@mui/material";
 import { columns } from "../constants";
 import zoomPlugin from "chartjs-plugin-zoom";
 import { useFilter } from "./FilterProvider";
@@ -166,9 +166,9 @@ function LineChart() {
   const { year, month } = useFilter();
   const chartRef = useRef(null);
   // const [pieData, setPieData] = useState({ labels: [] });
-  const resetZoom = () => {
-    chartRef.current.resetZoom();
-  };
+  // const resetZoom = () => {
+  //   chartRef.current.resetZoom();
+  // };
 
   useEffect(() => {
     fetchLabels(year, month).then((label2) => {
