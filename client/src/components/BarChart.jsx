@@ -2,6 +2,7 @@ import { Card } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
+import { months } from "../constants";
 import { useFilter } from "./FilterProvider";
 
 const optionsBar = {
@@ -49,7 +50,9 @@ const BarChart = () => {
           labels: dataTemp.map((datum) => datum.label),
           datasets: [
             {
-              label: "Total Tweets Count",
+              label: `Total Tweets Count of ${
+                months[month - 1] ? months[month - 1] : "All"
+              }`,
               data: dataTemp.map((datum) => datum.count),
               backgroundColor: "#247881",
             },
