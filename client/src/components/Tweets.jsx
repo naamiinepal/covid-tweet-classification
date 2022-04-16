@@ -12,7 +12,7 @@ const Tweets = () => {
   const [reload, setReload] = useState(true);
   let { year, month } = useFilter();
 
-  const [description, setDescription] = useState("All tweets.");
+  // const [description, setDescription] = useState("All tweets.");
 
   useEffect(() => {
     setDataList([]);
@@ -41,7 +41,7 @@ const Tweets = () => {
         console.log(data);
         setDataList((dl) => [...dl, ...data]);
       });
-  }, [offset, topics.length, year, month]);
+  }, [offset, topics, topics.length, year, month]);
   // useEffect(() => {
   //   let params = new URLSearchParams([
   //     ["offset", 0],
@@ -95,7 +95,7 @@ const Tweets = () => {
           endUser={true}
           setTopic={setTopics}
         />
-        <div className="text-base">{description}</div>
+        {/* <div className="text-base">{description}</div> */}
       </Card>
       <div className="w-3/4 overflow-y-auto">
         <InfiniteScroll

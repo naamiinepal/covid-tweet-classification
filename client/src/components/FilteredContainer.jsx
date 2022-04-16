@@ -15,37 +15,54 @@ const FilteredContainer = () => {
   return (
     <div>
       <div className="flex mt-2 items-center ml-16 pl-2 w-11/12 py-1 bg-primary">
-        <div className="text-white text-lg font-bold ">Filter Options</div>
-        <Select
-          sx={{ backgroundColor: "white", marginX: "2%" }}
-          labelId="minority"
-          id="minority-select"
-          value={yearTemp}
-          label="Year"
-          onChange={(event) => {
-            setYearTemp(`${event.target.value}`);
-          }}
+        <div className="text-white w-2/12 text-lg font-bold">View Data Of</div>
+        <div className="mx-2 w-2/12 flex items-center ">
+          <div className="text-white text-base font-semibold">Year: </div>
+          <Select
+            sx={{ backgroundColor: "white", minWidth: "5em", marginLeft: "1%" }}
+            labelId="minority"
+            id="minority-select"
+            value={yearTemp}
+            label="Year"
+            onChange={(event) => {
+              setYearTemp(`${event.target.value}`);
+            }}
+          >
+            <MenuItem value="none">All</MenuItem>
+            <MenuItem value={2021}>{2021}</MenuItem>
+            <MenuItem value={2022}>{2022}</MenuItem>
+          </Select>
+        </div>
+        <div className="mx-2 flex items-center w-2/12">
+          <div className="text-white text-base font-semibold">Month: </div>
+
+          <Select
+            labelId="minority"
+            id="minority-select"
+            sx={{
+              backgroundColor: "white",
+              marginLeft: "1%",
+              minWidth: "5em",
+            }}
+            value={monthTemp}
+            label="Month"
+            onChange={(event) => {
+              setMonthTemp(`${event.target.value}`);
+            }}
+          >
+            <MenuItem value="none">All</MenuItem>
+            {months.map((mon, idx) => (
+              <MenuItem value={idx + 1}>{mon}</MenuItem>
+            ))}
+          </Select>
+        </div>
+        <Button
+          variant="contained"
+          //   color="success"
+          size="large"
+          sx={{ backgroundColor: "#247890" }}
+          onClick={submitFilter}
         >
-          <MenuItem value="none">All</MenuItem>
-          <MenuItem value={2021}>{2021}</MenuItem>
-          <MenuItem value={2022}>{2022}</MenuItem>
-        </Select>
-        <Select
-          labelId="minority"
-          id="minority-select"
-          sx={{ backgroundColor: "white" }}
-          value={monthTemp}
-          label="Month"
-          onChange={(event) => {
-            setMonthTemp(`${event.target.value}`);
-          }}
-        >
-          <MenuItem value="none">All</MenuItem>
-          {months.map((mon, idx) => (
-            <MenuItem value={idx + 1}>{mon}</MenuItem>
-          ))}
-        </Select>
-        <Button variant="outlined" color="secondary" onClick={submitFilter}>
           Filter
         </Button>
       </div>

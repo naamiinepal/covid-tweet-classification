@@ -1,4 +1,14 @@
-import { Button, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  InputLabel,
+  ListItemText,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import React, { useState } from "react";
 import { columns } from "../constants";
 
@@ -20,6 +30,13 @@ const Selection = ({
           id="minority-select"
           value={topic}
           multiple
+          renderValue={(selected) => (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+              {selected.map((value) => (
+                <Chip key={value} label={value} />
+              ))}
+            </Box>
+          )}
           label="Topic"
           onChange={(event) => {
             const {
@@ -34,7 +51,10 @@ const Selection = ({
               (column) => column.field !== "verify" && column.field !== "text"
             )
             .map((column) => (
-              <MenuItem value={column.field}>{column.label}</MenuItem>
+              <MenuItem key={column.field} value={column.field}>
+                <Checkbox checked={topic.indexOf(column.field) > -1} />
+                <ListItemText primary={column.label} />
+              </MenuItem>
             ))}
         </Select>
       </div>

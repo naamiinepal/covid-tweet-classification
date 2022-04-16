@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,11 +12,13 @@ import {
   Filler,
   BarElement,
 } from "chart.js";
-import { Bar, Line } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import axios from "axios";
-import { Card } from "@mui/material";
+import { Button, Card } from "@mui/material";
 import { columns } from "../constants";
 import zoomPlugin from "chartjs-plugin-zoom";
+import { useFilter } from "./FilterProvider";
+import BarChart from "./BarChart";
 
 // import faker from 'faker';
 
@@ -85,7 +87,7 @@ const optionsPie = {
   plugins: {
     legend: {
       // position: 'top',
-      display: true,
+      // display: true,
     },
     title: {
       display: true,
@@ -94,7 +96,7 @@ const optionsPie = {
   },
 };
 
-const fetchLabels = async () =>
+const fetchLabels = async (year, month) =>
   axios
     .get(`/pseudo_tweets/overview?all=true`)
     .then((data) => data.data)
@@ -149,58 +151,29 @@ const fetchLabels = async () =>
 function LineChart() {
   const [labels, setLabels] = useState({});
   const [loading, setLoading] = useState(false);
+  const { year, month } = useFilter();
+  const chartRef = useRef(null);
+  // const [pieData, setPieData] = useState({ labels: [] });
+  const resetZoom = () => {
+    chartRef.current.resetZoom();
+  };
 
-  const [pieData, setPieData] = useState({ labels: [] });
   useEffect(() => {
-    // const pieLabels = [
-    //   "Covid Stats",
-    //   "Vaccination",
-    //   "Covid Politics",
-    //   "Humour",
-    //   "Lockdown",
-    //   "Civic Views",
-    //   "Life During Pandemic",
-    //   "Covid Waves and Variants",
-    //   "Others",
-    // ];
-    fetchLabels().then((label2) => {
-      if (label2.labels) {
-        const dataTemp = label2.datasets.map((datum) => {
-          return {
-            count: datum.data.reduce((prev, curr) => prev + curr, 0),
-            label: datum.label,
-          };
-        });
-        dataTemp.sort((a, b) => b.count - a.count);
-        console.log("Data Temp", dataTemp);
-        setPieData({
-          labels: dataTemp.map((datum) => datum.label),
-          datasets: [
-            {
-              label: "Total Tweets Count",
-              data: dataTemp.map((datum) => datum.count),
-              backgroundColor: "#247881",
-            },
-          ],
-        });
-      }
+    fetchLabels(year, month).then((label2) => {
       setLabels(label2);
       setLoading(true);
     });
-  }, []);
+  }, [year, month]);
 
   return (
     <div className="flex w-11/12 my-3 mx-16">
       {loading && (
         <Card className="flex-1">
-          <Line options={options} data={labels} />
+          <Button onClick={resetZoom}>Zoom Out</Button>
+          <Line ref={chartRef} options={options} data={labels} />
         </Card>
       )}
-      {loading && (
-        <Card className="w-1/3 ml-3">
-          <Bar options={optionsPie} data={pieData} />
-        </Card>
-      )}
+      <BarChart />
     </div>
   );
 }

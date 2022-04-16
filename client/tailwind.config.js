@@ -7,7 +7,8 @@ module.exports = {
         'hero-pattern': "url('svgs/Frontline.svg')",
       },
       colors: {
-        primary:"#247881"
+        primary:"#247881",
+        // filterBackground:"#247990"
       },
     },
   },
