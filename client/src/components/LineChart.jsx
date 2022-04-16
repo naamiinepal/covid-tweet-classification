@@ -55,7 +55,7 @@ const options = {
           enabled: false,
         },
         drag: {
-          enabled: true,
+          enabled: false,
         },
         mode: "x",
       },
@@ -181,7 +181,7 @@ function LineChart() {
     <div className="flex w-11/12 my-3 mx-16">
       {loading && (
         <Card className="flex-1">
-          <Button onClick={resetZoom}>Zoom Out</Button>
+          {/* <Button onClick={resetZoom}>Zoom Out</Button> */}
           <Line ref={chartRef} options={options} data={labels} />
         </Card>
       )}
