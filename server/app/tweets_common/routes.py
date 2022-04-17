@@ -9,7 +9,7 @@ from app.tweets_common.helper_functions import get_filtered_selection
 
 from ..database import get_session
 from . import router
-from .models import PseudoTweet, Topics, Tweet
+from .models import PseudoTweet, Topics, Tweet, TweetUpdate
 from .types import Month
 from .word_cloud_helper import get_word_count_distribution
 

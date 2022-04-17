@@ -163,3 +163,16 @@ def delete_pseudo_tweet(
     session.delete(db_pseudo_tweet)
     session.commit()
     return make_tweet_read(db_pseudo_tweet, others)
+
+
+@router.post("/edit_request/{pseudo_tweet_id}")
+def request_pseudo_tweet_edit(pseudo_tweet_id: PositiveInt, tweet: TweetUpdate):
+    """
+    Request for pseudo tweet edit
+    """
+    #NOTE: DANGER...CHANGE THIS CODE
+    # ONLY FOR DEMO PURPOSE
+    with open("edits.txt",'a',encoding = 'utf-8') as f:
+        f.write(f"Pseudo Tweet, {pseudo_tweet_id}, {tweet}\n")
+    
+    return {"message": "Successfully submitted edit request."}
