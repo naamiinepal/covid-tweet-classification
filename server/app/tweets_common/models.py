@@ -1,6 +1,6 @@
 from datetime import date, datetime, timezone
 from enum import Enum
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from pydantic import BaseModel, PositiveInt
 from sqlmodel import Field, Relationship, SQLModel, func
@@ -72,6 +72,11 @@ class TweetBase(SQLModel):
 
 class TweetRead(TweetBase):
     others: bool
+
+
+class PredictionOutput(BaseModel):
+    predictions: List[float]
+    labels: List[bool]
 
 
 # Table Models

@@ -128,9 +128,9 @@ def request_tweet_edit(tweet_id: PositiveInt, tweet: TweetUpdate):
     """
     Request for tweet edit
     """
-    #NOTE: DANGER...CHANGE THIS CODE
+    # NOTE: DANGER...CHANGE THIS CODE
     # ONLY FOR DEMO PURPOSE
-    with open("edits.txt",'a',encoding = 'utf-8') as f:
+    with open("edits.txt", "a", encoding="utf-8") as f:
         f.write(f"Tweet, {tweet_id}, {tweet}\n")
-    
+
     return {"message": "Successfully submitted edit request."}
