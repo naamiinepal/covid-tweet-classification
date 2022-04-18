@@ -32,7 +32,7 @@ const TweetCollectionAdminPanel = ({ action }) => {
       )
       .then((data) => data.data)
       .then((data) => {
-        console.log(data);
+        // console.log("Tweet Collection", data);
         setDataList(data);
       });
   }, [offset, topic, reload, action]);
