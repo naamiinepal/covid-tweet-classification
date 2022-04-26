@@ -11,7 +11,7 @@
     "@mui/x-data-grid": "^5.10.0",
     "@types/react": "^18.0.6",
     "@types/react-dom": "^18.0.2",
-    "axios": "^0.26.1",
+    "axios": "^0.27.0",
     "chart.js": "^3.7.1",
     "chartjs-plugin-zoom": "^1.2.1",
     "react": "^18.0.0",
