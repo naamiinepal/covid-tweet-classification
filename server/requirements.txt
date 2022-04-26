@@ -31,7 +31,7 @@ regex==2022.4.24
 requests==2.27.1
 six==1.16.0
 sniffio==1.2.0
-SQLAlchemy==1.4.35
+SQLAlchemy==1.4.36
 sqlalchemy2-stubs==0.0.2a22
 sqlmodel==0.0.6
 starlette==0.17.1
