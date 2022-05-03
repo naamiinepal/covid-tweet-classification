@@ -3,13 +3,12 @@ import {
   Button,
   Checkbox,
   Chip,
-  InputLabel,
   ListItemText,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { columns } from "../constants";
 
 const Selection = ({
@@ -24,10 +23,13 @@ const Selection = ({
   return (
     <div className="w-5/12 flex justify-between items-end mb-3">
       <div className="w-1/2">
-        <InputLabel id="minority">Topic</InputLabel>
+        {/* <InputLabel id="minority" sx={{ color: "white" }}>
+          Topic
+        </InputLabel> */}
         <Select
           labelId="minority"
           id="minority-select"
+          sx={{ backgroundColor: "white" }}
           value={topic}
           multiple
           renderValue={(selected) => (

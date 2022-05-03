@@ -1,4 +1,3 @@
-import { Card } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -83,39 +82,48 @@ const Tweets = () => {
   };
 
   return (
-    <div className="w-11/12 items-stretch flex justify-between mx-auto ">
-      <Card className="w-3/12 mr-3 p-3 h-96">
-        <div className="font-bold text-center text-2xl text-primary">
+    <div className="flex w-11/12 mx-auto">
+      <div className="w-1/2 items-stretch flex flex-col justify-between ">
+        <div className="mb-2 p-2 flex bg-primary ">
+          {/* <div className="font-bold text-center text-2xl text-primary">
           Filter
+        </div> */}
+          <div className="text-white mr-3 text-base font-semibold">
+            Filter by Topic:
+          </div>
+
+          <Selection
+            offset={offset}
+            setOffset={setOffset}
+            topic={topics}
+            toggleReload={toggleReload}
+            endUser={true}
+            setTopic={setTopics}
+          />
+
+          {/* <div className="text-base">{description}</div> */}
         </div>
-        <Selection
-          offset={offset}
-          setOffset={setOffset}
-          topic={topics}
-          toggleReload={toggleReload}
-          endUser={true}
-          setTopic={setTopics}
-        />
+        <div className="overflow-y-auto">
+          <InfiniteScroll
+            dataLength={dataList.length} //This is important field to render the next data
+            next={fetchData}
+            height={384}
+            hasMore={true}
+            loader={<h4>Loading...</h4>}
+            endMessage={
+              <p style={{ textAlign: "center" }}>
+                <b>Yay! You have seen it all</b>
+              </p>
+            }
+          >
+            {dataList.map((datum) => (
+              <Tweet tweet={datum} key={datum.id} />
+            ))}
+          </InfiniteScroll>
+        </div>
+      </div>
+      <div className="w-1/2">
         <WordCloud />
-        {/* <div className="text-base">{description}</div> */}
-      </Card>
-      <div className="w-3/4 overflow-y-auto">
-        <InfiniteScroll
-          dataLength={dataList.length} //This is important field to render the next data
-          next={fetchData}
-          height={384}
-          hasMore={true}
-          loader={<h4>Loading...</h4>}
-          endMessage={
-            <p style={{ textAlign: "center" }}>
-              <b>Yay! You have seen it all</b>
-            </p>
-          }
-        >
-          {dataList.map((datum) => (
-            <Tweet tweet={datum} key={datum.id} />
-          ))}
-        </InfiniteScroll>
       </div>
     </div>
   );

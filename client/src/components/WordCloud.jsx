@@ -1,27 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
-const optionsBar = {
-  responsive: true,
-  // indexAxis: "y",
-  maintainAspectRatio: false,
-
-  // barThickness: 6,
-  plugins: {
-    legend: {
-      // position: 'top',
-      // display: true,
-    },
-    title: {
-      display: true,
-      text: "Trending Words",
-    },
-  },
-};
+import ReactWordcloud from "react-wordcloud";
 
 const WordCloud = () => {
   const [words, setWords] = useState([]);
-  const [counts, setCounts] = useState([]);
+  // const [counts, setCounts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let params = new URLSearchParams();
@@ -33,31 +17,22 @@ const WordCloud = () => {
       .get("/tweets_commons/", { params })
       .then((data) => data.data)
       .then((data) => {
-        data.sort((a, b) => b[1] - a[1]);
-        let wordsTemp = data.map((datum) => datum[0]);
-        let countTemp = data.map((datum) => datum[1]);
-        console.log(countTemp);
-        setWords(wordsTemp.slice(0, 10));
-        setCounts(countTemp.slice(0, 10));
+        // console.log(data);
+        let wordCount = data.map((datum) => {
+          return { text: datum[0], value: datum[1] };
+        });
+        console.log(wordCount);
+        setWords(wordCount);
+        setLoading(true);
+        // data.sort((a, b) => b[1] - a[1]);
+        // let wordsTemp = data.map((datum) => datum[0]);
+        // let countTemp = data.map((datum) => datum[1]);
+        // console.log(countTemp);
+        // setWords(wordsTemp.slice(0, 10));
+        // setCounts(countTemp.slice(0, 10));
       });
   }, []);
-  return (
-    <div>
-      <Bar
-        options={optionsBar}
-        data={{
-          labels: words,
-          datasets: [
-            {
-              label: "Total Word Count",
-              data: counts,
-              backgroundColor: "#247881",
-            },
-          ],
-        }}
-      />
-    </div>
-  );
+  return <div>{loading && <ReactWordcloud words={words} />}</div>;
 };
 
 export default WordCloud;

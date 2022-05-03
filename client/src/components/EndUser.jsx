@@ -11,6 +11,8 @@ const EndUser = () => {
         <Purpose />
         {/* <Worker /> */}
         <FilteredContainer />
+        {/* <WordCloud /> */}
+
         {/* <Team /> */}
       </div>
     </div>
