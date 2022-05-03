@@ -41,15 +41,16 @@ def get_tweet_overview(session: Session = Depends(get_session)):
 @router.get("/count", response_model=TweetCount)
 def get_count(
     topics: Optional[List[Topics]] = Query(None),
-    day: Optional[date] = None,
+    start_date: Optional[date] = None,
     month: Optional[Month] = None,
+    end_date: Optional[date] = None,
     session: Session = Depends(get_session),
 ):
     """
     Get the count of tweets for the given filters
     """
 
-    return get_filtered_count(Tweet, topics, day, month, session)
+    return get_filtered_count(Tweet, topics, start_date, month, end_date, session)
 
 
 @router.get("/", response_model=List[TweetRead])
@@ -57,14 +58,15 @@ def read_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
     topics: Optional[List[Topics]] = Query(None),
-    day: Optional[date] = None,
+    start_date: Optional[date] = None,
     month: Optional[Month] = Query(None, description="Month in %Y-%m format"),
+    end_date: Optional[date] = None,
     session: Session = Depends(get_session),
 ):
     """
     Read tweets within the offset and limit
     """
-    selection = get_filtered_selection(topics, Tweet, day, month)
+    selection = get_filtered_selection(topics, Tweet, start_date, month, end_date)
 
     tweets = session.exec(
         selection.order_by(Tweet.id.desc()).offset(offset).limit(limit)
