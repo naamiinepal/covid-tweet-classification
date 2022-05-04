@@ -69,4 +69,4 @@ def get_word_count_distribution(tweets: Tuple[str]):
 
     word_freq = FreqDist(flat_tokens)
 
-    return word_freq.most_common(10)
+    return word_freq.most_common(100)
