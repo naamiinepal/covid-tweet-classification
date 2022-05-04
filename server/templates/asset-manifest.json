@@ -5,17 +5,17 @@
     "main.js.map": "/static/js/main.a69f74d6.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.776c1e0d.js",
     "runtime-main.js.map": "/static/js/runtime-main.776c1e0d.js.map",
-    "static/js/2.05ccd8da.chunk.js": "/static/js/2.05ccd8da.chunk.js",
-    "static/js/2.05ccd8da.chunk.js.map": "/static/js/2.05ccd8da.chunk.js.map",
+    "static/js/2.5c25a445.chunk.js": "/static/js/2.5c25a445.chunk.js",
+    "static/js/2.5c25a445.chunk.js.map": "/static/js/2.5c25a445.chunk.js.map",
     "index.html": "/index.html",
     "static/css/main.c273073a.chunk.css.map": "/static/css/main.c273073a.chunk.css.map",
-    "static/js/2.05ccd8da.chunk.js.LICENSE.txt": "/static/js/2.05ccd8da.chunk.js.LICENSE.txt",
+    "static/js/2.5c25a445.chunk.js.LICENSE.txt": "/static/js/2.5c25a445.chunk.js.LICENSE.txt",
     "static/media/TULogo.a8f378f8.png": "/static/media/TULogo.a8f378f8.png",
     "static/media/nepal.d8e23220.svg": "/static/media/nepal.d8e23220.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.776c1e0d.js",
-    "static/js/2.05ccd8da.chunk.js",
+    "static/js/2.5c25a445.chunk.js",
     "static/css/main.c273073a.chunk.css",
     "static/js/main.a69f74d6.chunk.js"
   ]
