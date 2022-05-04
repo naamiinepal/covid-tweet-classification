@@ -3,7 +3,7 @@ from typing import Callable, Collection, List, Optional, Tuple, TypeVar
 
 from fastapi import HTTPException
 from pydantic import PositiveInt
-from sqlmodel import Integer, Session, and_, func, not_, select, text, union_all, between
+from sqlmodel import Integer, Session, and_, func, not_, select, text, union_all
 from sqlmodel.sql.expression import Select
 
 from .models import PseudoTweet, Topics, Tweet, TweetRead, TweetUpdate
@@ -16,9 +16,8 @@ ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
 def get_filtered_selection(
     topics: Optional[Collection[Topics]],
     Model: ModelType,
-    start_date: Optional[date] = None,
+    day: Optional[date] = None,
     month: Optional[Month] = None,
-    end_date: Optional[date] = None,
     fields: Optional[Collection[str]] = None,
 ):
     """
@@ -43,17 +42,13 @@ def get_filtered_selection(
 
         selection = selection.filter(filter)
 
-    if start_date is not None or month is not None:
-        if end_date is not None:
-        # If both start_date and end_date are specified, get tweets between these dates
-            filter = between(Model.created_at, start_date, end_date)
-        else:
-        # If start_date and month are specified but not end_date, use start_date only
-            filter = (
-                func.date(Model.created_at) == start_date
-                if start_date is not None
-                else func.strftime("%Y-%m", Model.created_at) == month
-            )
+    if day is not None or month is not None:
+        # If both specified, use day only
+        filter = (
+            func.date(Model.created_at) == day
+            if day is not None
+            else func.strftime("%Y-%m", Model.created_at) == month
+        )
         selection = selection.filter(filter)
 
     return selection
@@ -208,9 +203,8 @@ def get_combined_model():
 def get_filtered_count(
     Model: ModelType,
     topics: Optional[Collection[Topics]],
-    start_date: Optional[date],
+    day: Optional[date],
     month: Optional[Month],
-    end_date: Optional[date],
     session: Session,
 ):
     def get_sum_column(column: str):
@@ -243,17 +237,13 @@ def get_filtered_count(
 
         selection = selection.filter(filter)
 
-    if start_date is not None or month is not None:
-        if end_date is not None:
-        # If both start_date and end_date are specified, get tweets between these dates
-            filter = between(Model.created_at, start_date, end_date)
-        else:
-        # If start_date and month are specified but not end_date, use start_date only
-            filter = (
-                func.date(Model.created_at) == start_date
-                if start_date is not None
-                else func.strftime("%Y-%m", Model.created_at) == month
-            )
+    if day is not None or month is not None:
+        # If both specified, use day only
+        filter = (
+            func.date(Model.created_at) == day
+            if day is not None
+            else func.strftime("%Y-%m", Model.created_at) == month
+        )
         selection = selection.filter(filter)
 
     return session.exec(selection).one()
