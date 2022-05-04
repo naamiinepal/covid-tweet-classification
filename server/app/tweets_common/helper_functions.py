@@ -7,24 +7,25 @@ from sqlmodel import Integer, Session, and_, func, not_, select, text, union_all
 from sqlmodel.sql.expression import Select
 
 from .models import PseudoTweet, Topics, Tweet, TweetRead, TweetUpdate
-from .types import Month
 
 # Make a Generic Type to get the original type completion back
 ModelType = TypeVar("ModelType", Tweet, PseudoTweet)
 
 
-def get_filtered_selection(
-    topics: Optional[Collection[Topics]],
+def get_selection_filter(
     Model: ModelType,
-    day: Optional[date] = None,
-    month: Optional[Month] = None,
-    fields: Optional[Collection[str]] = None,
+    topics: Optional[Collection[Topics]],
+    start_date: Optional[date],
+    end_date: Optional[date],
+    selection: Select[tuple],
+    others_filter,
 ):
     """
-    Get selection query with filter depending upon topics provided
+    Filter the selection by various dimensions.
+    `selection` is the selection before filtering
+    `others_filter` signifies the filter to be used for others column.
+    (direct text or creation of others column)
     """
-
-    selection = get_scalar_select(Model, fields)
 
     if topics is not None:
         if Topics.others in topics:
@@ -32,24 +33,40 @@ def get_filtered_selection(
                 raise HTTPException(400, "Can't filter by others and other topics.")
 
             # If others is defined in the selection, directly provide the column
-            filter = (
-                text(Topics.others)
-                if fields is None or not len(fields) or "others" in fields
-                else get_others_column(Model)
-            )
+            filter = others_filter
         else:
             filter = and_(*tuple(getattr(Model, topic) for topic in topics))
 
         selection = selection.filter(filter)
 
-    if day is not None or month is not None:
-        # If both specified, use day only
-        filter = (
-            func.date(Model.created_at) == day
-            if day is not None
-            else func.strftime("%Y-%m", Model.created_at) == month
-        )
-        selection = selection.filter(filter)
+    created_date = func.date(Model.created_at)
+
+    if start_date is not None:
+        selection = selection.filter(created_date >= start_date)
+
+    if end_date is not None:
+        selection = selection.filter(created_date < end_date)
+    return selection
+
+
+def get_filtered_selection(
+    Model: ModelType,
+    topics: Optional[Collection[Topics]],
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    fields: Optional[Collection[str]] = None,
+):
+    """
+    Get selection query with filter depending upon topics provided
+    """
+
+    selection, contains_others = get_scalar_select(Model, fields)
+
+    others_filter = text(Topics.others) if contains_others else get_others_column(Model)
+
+    selection = get_selection_filter(
+        Model, topics, start_date, end_date, selection, others_filter
+    )
 
     return selection
 
@@ -58,9 +75,10 @@ def get_a_tweet(session: Session, tweet_id: PositiveInt, Model: ModelType) -> tu
     """
     Get a not-None tweet from the database with others column as a dictonary
     """
-    tweet = session.exec(
-        get_scalar_select(Model).where(Model.id == tweet_id)
-    ).one_or_none()
+
+    selection, _ = get_scalar_select(Model).where(Model.id == tweet_id)
+
+    tweet = session.exec(selection).one_or_none()
 
     assert_not_null(tweet, tweet_id, Model)
 
@@ -100,7 +118,7 @@ def assert_not_null(tweet: Optional[ModelType], id: PositiveInt, Model: ModelTyp
 
 def get_scalar_select(
     Model: ModelType, fields: Optional[Collection[str]] = None
-) -> Select[tuple]:
+) -> Tuple[Select[tuple], bool]:
     """
     Get a select statement for the Model with others column
     """
@@ -112,10 +130,12 @@ def get_scalar_select(
 
     db_fields = list(getattr(Model, field) for field in fields)
 
-    if is_fields_empty or "others" in fields:
+    contains_others = is_fields_empty or "others" in fields
+
+    if contains_others:
         db_fields.append(get_others_column(Model))
 
-    return select(*db_fields)
+    return select(*db_fields), contains_others
 
 
 MapperReturnType = TypeVar("MapperReturnType")
@@ -203,8 +223,8 @@ def get_combined_model():
 def get_filtered_count(
     Model: ModelType,
     topics: Optional[Collection[Topics]],
-    day: Optional[date],
-    month: Optional[Month],
+    start_date: Optional[date],
+    end_date: Optional[date],
     session: Session,
 ):
     def get_sum_column(column: str):
@@ -225,25 +245,10 @@ def get_filtered_count(
         func.count().label("total"),
     )
 
-    if topics is not None:
-        if Topics.others in topics:
-            if len(topics) > 1:
-                raise HTTPException(400, "Can't filter by others and other topics.")
+    others_filter = text(Topics.others)
 
-            # If others is defined in the selection, directly provide the column
-            filter = text(Topics.others)
-        else:
-            filter = and_(*tuple(getattr(Model, topic) for topic in topics))
-
-        selection = selection.filter(filter)
-
-    if day is not None or month is not None:
-        # If both specified, use day only
-        filter = (
-            func.date(Model.created_at) == day
-            if day is not None
-            else func.strftime("%Y-%m", Model.created_at) == month
-        )
-        selection = selection.filter(filter)
+    selection = get_selection_filter(
+        Model, topics, start_date, end_date, selection, others_filter
+    )
 
     return session.exec(selection).one()

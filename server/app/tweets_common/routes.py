@@ -12,7 +12,6 @@ from app.tweets_common.helper_functions import get_filtered_selection
 from ..database import get_session
 from . import router
 from .models import PredictionOutput, PseudoTweet, Topics, Tweet
-from .types import Month
 from .word_cloud_helper import get_word_count_distribution
 
 CACHE_TIMEOUT = 6 * 60 * 60  # 6 hours
@@ -22,8 +21,8 @@ CACHE_TIMEOUT = 6 * 60 * 60  # 6 hours
 @timed_lru_cache(seconds=CACHE_TIMEOUT, maxsize=64)
 def get_word_cloud(
     topics: Optional[Tuple[Topics, ...]] = Query(None),
-    day: Optional[date] = None,
-    month: Optional[Month] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
     session: Session = Depends(get_session),
 ):
     """
@@ -32,10 +31,10 @@ def get_word_cloud(
 
     fields = ("text",)
 
-    tweet_selection = get_filtered_selection(topics, Tweet, day, month, fields)
-    pseudo_tweet_selection = get_filtered_selection(
-        topics, PseudoTweet, day, month, fields
-    )
+    args = (topics, start_date, end_date, fields)
+
+    tweet_selection = get_filtered_selection(Tweet, *args)
+    pseudo_tweet_selection = get_filtered_selection(PseudoTweet, *args)
 
     combined_model = union_all(tweet_selection, pseudo_tweet_selection).subquery().c
 
@@ -43,7 +42,9 @@ def get_word_cloud(
     combined_tweets = session.exec(select(combined_model.text)).all()
 
     # change list of tweets to tuple to allow caching
-    word_freq = get_word_count_distribution(tuple(combined_tweets))
+    combined_tweets = tuple(combined_tweets)
+
+    word_freq = get_word_count_distribution(combined_tweets)
 
     return word_freq
 
