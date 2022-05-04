@@ -26,7 +26,6 @@ from ..tweets_common.models import (
     TweetRead,
     TweetUpdate,
 )
-from ..tweets_common.types import Month
 from . import router
 
 
@@ -45,8 +44,8 @@ def get_pseudo_overview(all: bool = False, session: Session = Depends(get_sessio
 @router.get("/count", response_model=TweetCount)
 def get_count(
     topics: Optional[List[Topics]] = Query(None),
-    day: Optional[date] = None,
-    month: Optional[Month] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
     all: bool = False,
     session: Session = Depends(get_session),
 ):
@@ -56,7 +55,7 @@ def get_count(
 
     Model = get_combined_model() if all else PseudoTweet
 
-    return get_filtered_count(Model, topics, day, month, session)
+    return get_filtered_count(Model, topics, start_date, end_date, session)
 
 
 @router.get("/", response_model=List[TweetRead])
@@ -64,15 +63,15 @@ def read_pseudo_tweets(
     offset: NonNegativeInt = 0,
     limit: conint(le=10, gt=0) = 10,
     topics: Optional[List[Topics]] = Query(None),
-    day: Optional[date] = None,
-    month: Optional[Month] = Query(None, description="Month in %Y-%m format"),
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
     maximize_labels: bool = False,
     session: Session = Depends(get_session),
 ):
     """
     Read pseudo tweets within the offset and limit
     """
-    selection = get_filtered_selection(topics, PseudoTweet, day, month)
+    selection = get_filtered_selection(PseudoTweet, topics, start_date, end_date)
 
     # others should be exclusively provided, hence the last check
     is_others = topics is not None and len(topics) and topics[0] == Topics.others
