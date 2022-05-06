@@ -1,7 +1,23 @@
+import { Card } from "@mui/material";
 import axios from "axios";
+import Title from "./Title";
 import { useEffect, useState } from "react";
 import ReactWordcloud from "react-wordcloud";
-
+const options = {
+  colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"],
+  enableTooltip: true,
+  deterministic: false,
+  fontFamily: "impact",
+  fontSizes: [5, 60],
+  fontStyle: "normal",
+  fontWeight: "normal",
+  padding: 3,
+  rotations: 3,
+  rotationAngles: [0, 90],
+  scale: "sqrt",
+  spiral: "archimedean",
+  transitionDuration: 1000,
+};
 const WordCloud = () => {
   const [words, setWords] = useState([]);
   // const [counts, setCounts] = useState([]);
@@ -24,15 +40,18 @@ const WordCloud = () => {
         console.log(wordCount);
         setWords(wordCount);
         setLoading(true);
-        // data.sort((a, b) => b[1] - a[1]);
-        // let wordsTemp = data.map((datum) => datum[0]);
-        // let countTemp = data.map((datum) => datum[1]);
-        // console.log(countTemp);
-        // setWords(wordsTemp.slice(0, 10));
-        // setCounts(countTemp.slice(0, 10));
       });
   }, []);
-  return <div>{loading && <ReactWordcloud words={words} />}</div>;
+  return (
+    <div>
+      {loading && (
+        <Card className="p-3 h-96 mt-24 ml-2">
+          <Title text={"Trending Words"}></Title>
+          <ReactWordcloud options={options} words={words} />
+        </Card>
+      )}
+    </div>
+  );
 };
 
 export default WordCloud;

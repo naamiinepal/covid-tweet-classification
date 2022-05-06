@@ -2,7 +2,6 @@ import { Card } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import { months } from "../constants";
 import { useFilter } from "./FilterProvider";
 
 const optionsBar = {
@@ -25,13 +24,15 @@ const optionsBar = {
 const BarChart = () => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
+  let { startDate, endDate } = useFilter();
 
-  let { year, month } = useFilter();
   useEffect(() => {
     let params = new URLSearchParams([["all", true]]);
-    if (year !== "none" && month !== "none") {
-      params.append("month", `${year}-${month}`);
-    }
+    params.append("start_date", startDate);
+    params.append("end_date", endDate);
+    // if (year !== "none" && month !== "none") {
+    //   params.append("month", `${year}-${month}`);
+    // }
     axios
       .get(`/pseudo_tweets/count`, { params })
       .then((data) => data.data)
@@ -50,9 +51,9 @@ const BarChart = () => {
           labels: dataTemp.map((datum) => datum.label),
           datasets: [
             {
-              label: `Total Tweets Count of ${
-                months[month - 1] ? months[month - 1] : "All"
-              }`,
+              // label: `Total Tweets Count of ${
+              //   months[month - 1] ? months[month - 1] : "All"
+              // }`,
               data: dataTemp.map((datum) => datum.count),
               backgroundColor: "#247881",
             },
@@ -60,7 +61,7 @@ const BarChart = () => {
         });
         setLoading(true);
       });
-  }, [year, month]);
+  }, [startDate, endDate]);
   return (
     <>
       {loading && (

@@ -10,13 +10,13 @@ const Tweets = () => {
   const [offset, setOffset] = useState(0);
   const [topics, setTopics] = useState([]);
   const [reload, setReload] = useState(true);
-  let { year, month } = useFilter();
+  let { startDate, endDate } = useFilter();
 
   // const [description, setDescription] = useState("All tweets.");
 
   useEffect(() => {
     setDataList([]);
-  }, [year, month, topics.length]);
+  }, [startDate, endDate, topics.length]);
 
   useEffect(() => {
     // let params = { offset: offset, limit: 10 };
@@ -24,9 +24,9 @@ const Tweets = () => {
       ["offset", offset],
       ["limit", 10],
     ]);
-    if (year !== "none" && month !== "none") {
-      params.append("month", `${year}-${month}`);
-    }
+
+    params.append("start_date", startDate);
+    params.append("end_date", endDate);
     if (topics.length !== 0) {
       topics.forEach((topic) => {
         params.append("topics", topic);
@@ -41,38 +41,7 @@ const Tweets = () => {
         console.log(data);
         setDataList((dl) => [...dl, ...data]);
       });
-  }, [offset, topics, topics.length, year, month]);
-  // useEffect(() => {
-  //   let params = new URLSearchParams([
-  //     ["offset", 0],
-  //     ["limit", 10],
-  //   ]);
-  //   if (year !== "none" && month !== "none") {
-  //     params.append("month", `${year}-${month}`);
-  //   }
-  //   if (topics.length !== 0) {
-  //     topics.forEach((topic) => {
-  //       params.append("topics", topic);
-  //     });
-  //   }
-  //   axios
-  //     .get(`/tweets/`, {
-  //       params,
-  //     })
-  //     .then((data) => data.data)
-  //     .then((data) => {
-  //       console.log(data);
-  //       setDataList(data);
-  //     });
-  // }, [reload, topics.length, year, month]);
-
-  // useEffect(() => {
-  //   const current_descrip =
-  //     topics !== "none"
-  //       ? columns.filter((column) => column.field === topics)[0].description
-  //       : "All tweets.";
-  //   setDescription(current_descrip);
-  // }, [reload, topics]);
+  }, [offset, topics, topics.length, startDate, endDate]);
 
   const fetchData = () => {
     setOffset(offset + 10);
@@ -84,7 +53,7 @@ const Tweets = () => {
   return (
     <div className="flex w-11/12 mx-auto">
       <div className="w-1/2 items-stretch flex flex-col justify-between ">
-        <div className="mb-2 p-2 flex bg-primary ">
+        <div className="mb-2 p-2 flex items-center bg-primary ">
           {/* <div className="font-bold text-center text-2xl text-primary">
           Filter
         </div> */}

@@ -96,7 +96,7 @@ const optionsPie = {
   },
 };
 
-const fetchLabels = async (year, month) =>
+const fetchLabels = async (startDate, endDate) =>
   axios
     .get(`/pseudo_tweets/overview?all=true`)
     .then((data) => data.data)
@@ -105,13 +105,11 @@ const fetchLabels = async (year, month) =>
       if (data) {
         console.log(data[0].created_date.substring(5, 7));
 
-        if (year !== "none" && month !== "none") {
-          data = data.filter(
-            (datum) =>
-              parseInt(datum.created_date.substring(0, 4)) === parseInt(year) &&
-              parseInt(datum.created_date.substring(5, 7)) === parseInt(month)
-          );
-        }
+        data = data.filter(
+          (datum) =>
+            new Date(datum.created_date) > new Date(startDate) &&
+            new Date(datum.created_date) < new Date(endDate)
+        );
       }
 
       const covid_stats = data.map((datum) => datum.covid_stats);
@@ -163,7 +161,9 @@ const fetchLabels = async (year, month) =>
 function LineChart() {
   const [labels, setLabels] = useState({});
   const [loading, setLoading] = useState(false);
-  const { year, month } = useFilter();
+  // const { year, month } = useFilter();
+  let { startDate, endDate } = useFilter();
+
   const chartRef = useRef(null);
   // const [pieData, setPieData] = useState({ labels: [] });
   // const resetZoom = () => {
@@ -171,11 +171,11 @@ function LineChart() {
   // };
 
   useEffect(() => {
-    fetchLabels(year, month).then((label2) => {
+    fetchLabels(startDate, endDate).then((label2) => {
       setLabels(label2);
       setLoading(true);
     });
-  }, [year, month]);
+  }, [startDate, endDate]);
 
   return (
     <div className="flex w-11/12 my-3 mx-16">

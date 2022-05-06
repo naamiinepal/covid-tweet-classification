@@ -6,10 +6,15 @@ import EndUser from './components/EndUser';
 import FilterProvider from './components/FilterProvider';
 import Login from './components/Login';
 import RequireAuth from './components/RequireAuth';
+import MomentUtils from '@date-io/moment';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 function App() {
   return (
-    <AuthProvider>
+    <MuiPickersUtilsProvider utils={MomentUtils}>
+
+<AuthProvider>
+
       <FilterProvider>
    <Routes>
      <Route path="/" element={<EndUser />} />
@@ -34,6 +39,7 @@ function App() {
    </Routes>
    </FilterProvider>
     </AuthProvider>
+    </MuiPickersUtilsProvider>
   );
 }
 
