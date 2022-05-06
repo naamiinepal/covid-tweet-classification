@@ -51,9 +51,7 @@ const BarChart = () => {
           labels: dataTemp.map((datum) => datum.label),
           datasets: [
             {
-              // label: `Total Tweets Count of ${
-              //   months[month - 1] ? months[month - 1] : "All"
-              // }`,
+              label: "Total tweet Count in the given range",
               data: dataTemp.map((datum) => datum.count),
               backgroundColor: "#247881",
             },
