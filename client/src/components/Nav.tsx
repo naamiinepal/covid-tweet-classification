@@ -1,7 +1,7 @@
 import Name from "./Name";
 import TULogo from "../images/TULogo.png"
 import NaamiiLogo from "../images/naamii-logo.png"
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Nav = () => {
     return (
