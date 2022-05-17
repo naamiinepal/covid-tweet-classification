@@ -8,6 +8,7 @@ import Login from './components/Login';
 import RequireAuth from './components/RequireAuth';
 import MomentUtils from '@date-io/moment';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import About from './components/About';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
    <Routes>
      <Route path="/" element={<EndUser />} />
      <Route path="/login" element={<Login />} />
+     <Route path="/about" element={<About />} />
       <Route
             path="/ap"
             element={
