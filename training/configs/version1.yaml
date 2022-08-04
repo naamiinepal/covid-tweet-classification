@@ -1,0 +1,43 @@
+seed_everything: null
+trainer:
+  logger:
+      class_path: pytorch_lightning.loggers.TensorBoardLogger
+      init_args:
+          save_dir: tb_logs
+          name: baseline
+          log_graph: True
+          default_hp_metric: False
+  callbacks:
+    - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+      init_args:
+        save_top_k: 10
+        monitor: val_loss
+        mode: min
+        dirpath: checkpoints/muril_baseline
+        save_weights_only: True
+        filename: "{epoch:02d}-{val_loss:.4f}"
+    - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+    - class_path: pytorch_lightning.callbacks.EarlyStopping
+      init_args:
+        monitor: val_loss
+        patience: 10
+        verbose: True
+  devices: [0]
+  max_epochs: 50
+  accelerator: gpu
+  log_every_n_steps: 140
+model:
+  model_name_or_path: ${data.model_name_or_path}
+  num_labels: 8
+  learning_rate: 5.0e-05
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  dropout_rate: 0.4
+  calc_bias: true
+data:
+  model_name_or_path: google/muril-base-cased
+  dataset_path: datasets/nepali_tweets_dataset_labelled_tweets_feb_23
+  batch_size: 32
+  fold: 1
+  max_workers: 4
+  pin_memory: true
