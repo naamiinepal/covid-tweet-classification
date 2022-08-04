@@ -35,3 +35,4 @@ jobs:
       with:
         commit_message: "Update React Build: ${{ github.sha }}"
         skip_dirty_check: true
+        push_options: '--force'
