@@ -15,7 +15,7 @@
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.5",
     "axios": "^0.27.2",
-    "chart.js": "^3.8.2",
+    "chart.js": "^3.9.1",
     "chartjs-plugin-zoom": "^1.2.1",
     "moment": "^2.29.4",
     "react": "^18.1.0",
@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^9.8.8",
-    "postcss": "^8.4.13",
+    "postcss": "^8.4.14",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
   }
 }
