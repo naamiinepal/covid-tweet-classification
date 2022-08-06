@@ -1,15 +1,15 @@
-from typing import Optional
+from typing import Optional, Union
 
 import pytorch_lightning as pl
 import torch
-import torchmetrics
+import torchmetrics as tm
 from torch import nn
 from transformers import (
-    AutoModel,
     AutoModelForSequenceClassification,
     get_polynomial_decay_schedule_with_warmup,
 )
 from transformers.modeling_outputs import SequenceClassifierOutput
+from datamodule import DataModule
 
 
 class LightningModel(pl.LightningModule):
@@ -37,25 +37,6 @@ class LightningModel(pl.LightningModule):
             classifier_dropout=dropout_rate,
         )
 
-        self.train_auc = torchmetrics.AUC()
-        self.train_f1score = torchmetrics.F1Score(
-            num_classes=num_labels, average="weighted"
-        )
-        self.train_stat_scores = torchmetrics.StatScores(
-            num_classes=num_labels, reduce="macro"
-        )
-
-        self.val_auc = torchmetrics.AUC()
-        self.val_f1score = torchmetrics.F1Score(
-            num_classes=num_labels, average="weighted"
-        )
-        self.val_stat_scores = torchmetrics.StatScores(
-            num_classes=num_labels, reduce="macro"
-        )
-
-    def prepare_data(self) -> None:
-        AutoModel.from_pretrained(self.hparams.model_name_or_path)
-
     def setup(self, stage: Optional[str] = None) -> None:
         if (stage is None or stage == "fit") and self.hparams.calc_bias:
             # Get labels as a pandas dataframe
@@ -71,19 +52,14 @@ class LightningModel(pl.LightningModule):
         return self.model(**inputs)
 
     def training_step(self, batch: dict, batch_idx: int):
-        model_pred = self(batch)
+        labels = batch.pop("labels")
+
+        # Convert to float to calculate loss
+        model_pred = self({**batch, "labels": labels.float()})
 
         logits = model_pred.logits
-        labels = batch["labels"]
 
-        self.update_auc(logits, labels, self.train_auc)
-        self.log("train_auc", self.train_auc)
-
-        self.train_f1score(logits, labels)
-        self.log("train_f1score", self.train_f1score)
-
-        self.train_stat_scores(logits, labels)
-        self.log("train_stat_scores", self.train_stat_scores)
+        self.log_metrics(logits, labels, "train")
 
         loss = model_pred.loss
         self.log("train_loss", loss)
@@ -91,34 +67,64 @@ class LightningModel(pl.LightningModule):
         return loss
 
     def validation_step(self, batch: dict, batch_idx: int, dataloader_idx: int = 0):
-        model_pred = self(batch)
+        labels = batch.pop("labels")
+
+        # Convert to float to calculate loss
+        model_pred = self({**batch, "labels": labels.float()})
 
         logits = model_pred.logits
-        labels = batch["labels"]
 
-        self.update_auc(logits, labels, self.val_auc)
-        self.log("val_auc", self.val_auc)
-
-        self.val_f1score(logits, labels)
-        self.log("val_f1score", self.val_f1score)
-
-        self.val_stat_scores(logits, labels)
-        self.log("val_stat_scores", self.val_stat_scores)
+        self.log_metrics(logits, labels, "val")
 
         loss = model_pred.loss
-        self.log("val_loss", loss)
+        self.log("val_loss", loss, prog_bar=True, sync_dist=True)
 
-    def update_auc(
-        self, logits: torch.Tensor, labels: torch.Tensor, auc_tracker: torchmetrics.AUC
-    ):
-        """
-        Update internal state of the provided `auc_tracker`
-        """
-        precision, recall, _ = torchmetrics.functional.precision_recall_curve(
+    def log_metrics(self, *metrics_args: Union[torch.Tensor, str]):
+        self.log_auc(*metrics_args)
+        self.log_f1score(*metrics_args)
+        self.log_stat_scores(*metrics_args)
+
+    def log_auc(self, logits: torch.Tensor, labels: torch.Tensor, step: str):
+        precision, recall, _ = tm.functional.precision_recall_curve(
             logits, labels, self.hparams.num_labels
         )
 
-        auc_tracker(precision, recall)
+        auc = tuple(tm.functional.auc(p, r) for p, r in zip(precision, recall))
+
+        log_prefix = f"{step}_auc_"
+
+        for lab, value in zip(DataModule.label_names, auc):
+            self.log(f"{log_prefix}{lab}", value, sync_dist=True)
+
+        self.log(f"{log_prefix}mean", torch.stack(auc).mean(), sync_dist=True)
+
+    def log_f1score(self, logits: torch.Tensor, labels: torch.Tensor, step: str):
+        f1_score = tm.functional.f1_score(
+            logits, labels, average=None, num_classes=self.hparams.num_labels
+        )
+
+        log_prefix = f"{step}_f1score_"
+
+        for lab, value in zip(DataModule.label_names, f1_score):
+            self.log(f"{log_prefix}{lab}", value, sync_dist=True)
+
+        self.log(f"{log_prefix}mean", f1_score.mean(), sync_dist=True)
+
+    def log_stat_scores(self, logits: torch.Tensor, labels: torch.Tensor, step: str):
+        # tp, fp, tn, fn, support
+        stat_scores = tm.functional.stat_scores(
+            logits, labels, reduce="macro", num_classes=self.hparams.num_labels
+        ).float()
+
+        stat_scores_names = ("tp", "fp", "tn", "fn", "support")
+
+        for lab, score in zip(DataModule.label_names, stat_scores):
+            for name, value in zip(stat_scores_names, score):
+                # The logger logs only float tensors
+                self.log(f"{step}_{name}_{lab}", value, sync_dist=True)
+
+        for name, value in zip(stat_scores_names, stat_scores.mean(0)):
+            self.log(f"{step}_{name}_mean", value, sync_dist=True)
 
     def predict_step(self, batch: dict, batch_idx: int, dataloader_idx: int = 0):
         return self(batch).logits >= 0.5
