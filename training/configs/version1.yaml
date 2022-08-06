@@ -1,11 +1,10 @@
-seed_everything: null
+seed_everything: 42
 trainer:
   logger:
       class_path: pytorch_lightning.loggers.TensorBoardLogger
       init_args:
           save_dir: tb_logs
           name: baseline
-          log_graph: True
           default_hp_metric: False
   callbacks:
     - class_path: pytorch_lightning.callbacks.ModelCheckpoint
@@ -22,10 +21,11 @@ trainer:
         monitor: val_loss
         patience: 10
         verbose: True
-  devices: [0]
+  # devices: [0]
   max_epochs: 50
   accelerator: gpu
-  log_every_n_steps: 140
+  strategy: ddp_find_unused_parameters_false
+  log_every_n_steps: 77
 model:
   model_name_or_path: ${data.model_name_or_path}
   num_labels: 8

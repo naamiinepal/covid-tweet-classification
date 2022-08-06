@@ -189,3 +189,14 @@ cython_debug/
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
+
+*_logs/
+
+# Track only the CSVs inside of dataset folder
+datasets/
+!*.csv
+
+# Ignore checkpoints
+checkpoints/
+*.ckpt
+*.pt
