@@ -32,7 +32,7 @@ requests==2.28.1
 six==1.16.0
 sniffio==1.2.0
 SQLAlchemy==1.4.39
-sqlalchemy2-stubs==0.0.2a24
+sqlalchemy2-stubs==0.0.2a25
 sqlmodel==0.0.6
 toml==0.10.2
 tomli==2.0.1
