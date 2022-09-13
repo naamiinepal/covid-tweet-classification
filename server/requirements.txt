@@ -33,7 +33,7 @@ six==1.16.0
 sniffio==1.2.0
 SQLAlchemy==1.4.39
 sqlalchemy2-stubs==0.0.2a24
-sqlmodel==0.0.6
+sqlmodel==0.0.8
 toml==0.10.2
 tomli==2.0.1
 tqdm==4.64.0
