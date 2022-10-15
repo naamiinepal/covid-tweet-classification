@@ -26,6 +26,7 @@ trainer:
   accelerator: gpu
   strategy: ddp_find_unused_parameters_false
   log_every_n_steps: 77
+  precision: 16
 model:
   model_name_or_path: ${data.model_name_or_path}
   num_labels: 8

@@ -1,0 +1,7 @@
+tensorflow
+tensorflow_addons
+tensorflow_hub
+tensorflow_text
+tf-models-official
+matplotlib
+wandb

@@ -15,6 +15,7 @@ from datamodule import DataModule
 class LightningModel(pl.LightningModule):
 
     no_decay_params = {"bias", "LayerNorm.weight"}
+    stat_scores_names = ("tp", "fp", "tn", "fn", "support")
 
     def __init__(
         self,
@@ -36,6 +37,19 @@ class LightningModel(pl.LightningModule):
             problem_type="multi_label_classification",
             classifier_dropout=dropout_rate,
         )
+
+        self.train_f1score = tm.F1Score(num_classes=num_labels, average="weighted")
+        self.train_statscore = tm.StatScores()
+
+        self.val_f1score = tm.F1Score(num_classes=num_labels, average="weighted")
+        self.val_statscore = tm.StatScores()
+
+        self.auc_metric_builder("train")
+        self.auc_metric_builder("val")
+
+    def auc_metric_builder(self, step: str):
+        for lab in DataModule.label_names:
+            setattr(self, f"{step}_auc_{lab}", tm.AUC(reorder=True))
 
     def setup(self, stage: Optional[str] = None) -> None:
         if (stage is None or stage == "fit") and self.hparams.calc_bias:
@@ -89,42 +103,57 @@ class LightningModel(pl.LightningModule):
             logits, labels, self.hparams.num_labels
         )
 
-        auc = tuple(tm.functional.auc(p, r) for p, r in zip(precision, recall))
+        # auc = tuple(tm.functional.auc(p, r) for p, r in zip(precision, recall))
 
-        log_prefix = f"{step}_auc_"
+        log_prefix = f"{step}/auc_"
 
-        for lab, value in zip(DataModule.label_names, auc):
-            self.log(f"{log_prefix}{lab}", value, sync_dist=True)
+        for lab, prec, rec in zip(DataModule.label_names, precision, recall):
+            metric = getattr(self, f"{step}_auc_{lab}")
+            metric(rec, prec)
+            self.log(f"{log_prefix}{lab}", metric, sync_dist=True)
 
-        self.log(f"{log_prefix}mean", torch.stack(auc).mean(), sync_dist=True)
+        # self.log(f"{log_prefix}mean", torch.stack(auc).mean(), sync_dist=True)
 
     def log_f1score(self, logits: torch.Tensor, labels: torch.Tensor, step: str):
-        f1_score = tm.functional.f1_score(
-            logits, labels, average=None, num_classes=self.hparams.num_labels
-        )
+        # f1_score = tm.functional.f1_score(
+        #     logits, labels, average=None, num_classes=self.hparams.num_labels
+        # )
 
-        log_prefix = f"{step}_f1score_"
+        # log_prefix = f"{step}/f1score_"
 
-        for lab, value in zip(DataModule.label_names, f1_score):
-            self.log(f"{log_prefix}{lab}", value, sync_dist=True)
+        # for lab, value in zip(DataModule.label_names, f1_score):
+        #     self.log(f"{log_prefix}{lab}", value, sync_dist=True)
 
-        self.log(f"{log_prefix}mean", f1_score.mean(), sync_dist=True)
+        # self.log(f"{log_prefix}mean", f1_score.mean(), sync_dist=True)
+
+        metric = self.train_f1score if step == "train" else self.val_f1score
+
+        metric(logits, labels)
+
+        self.log(f"{step}/f1score", metric, prog_bar=True, sync_dist=True)
 
     def log_stat_scores(self, logits: torch.Tensor, labels: torch.Tensor, step: str):
         # tp, fp, tn, fn, support
-        stat_scores = tm.functional.stat_scores(
-            logits, labels, reduce="macro", num_classes=self.hparams.num_labels
-        ).float()
+        # stat_scores = tm.functional.stat_scores(
+        #     logits, labels, reduce="macro", num_classes=self.hparams.num_labels
+        # ).float()
 
-        stat_scores_names = ("tp", "fp", "tn", "fn", "support")
+        # for lab, score in zip(DataModule.label_names, stat_scores):
+        #     for name, value in zip(stat_scores_names, score):
+        #         # The logger logs only float tensors
+        #         self.log(f"{step}/{name}_{lab}", value, sync_dist=True)
 
-        for lab, score in zip(DataModule.label_names, stat_scores):
-            for name, value in zip(stat_scores_names, score):
-                # The logger logs only float tensors
-                self.log(f"{step}_{name}_{lab}", value, sync_dist=True)
+        # for name, value in zip(stat_scores_names, stat_scores.mean(0)):
+        #     self.log(f"{step}/{name}_mean", value, sync_dist=True)
 
-        for name, value in zip(stat_scores_names, stat_scores.mean(0)):
-            self.log(f"{step}_{name}_mean", value, sync_dist=True)
+        metric = self.train_statscore if step == "train" else self.val_statscore
+
+        scores = metric(logits, labels).float()
+
+        for name, value in zip(self.stat_scores_names, scores):
+            self.log(f"{step}/{name}", value, sync_dist=True)
+
+        # self.log(f"{step}/f1score", metric, sync_dist=True)
 
     def predict_step(self, batch: dict, batch_idx: int, dataloader_idx: int = 0):
         return self(batch).logits >= 0.5

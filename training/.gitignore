@@ -200,3 +200,4 @@ datasets/
 checkpoints/
 *.ckpt
 *.pt
+wandb/
