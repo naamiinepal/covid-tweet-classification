@@ -11,7 +11,7 @@ dnspython==2.2.1
 email-validator==1.2.1
 fastapi==0.83.0
 greenlet==1.1.2
-h11==0.13.0
+h11==0.14.0
 idna==3.3
 iniconfig==1.1.1
 joblib==1.2.0
