@@ -17,7 +17,7 @@ const optionsBar = {
     },
     title: {
       display: true,
-      text: "Bar Graph",
+      text: "Total number of tweets for individual topics",
     },
   },
 };

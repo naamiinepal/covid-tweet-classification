@@ -46,7 +46,7 @@ const options = {
     tooltip: { cornerRadius: 0 },
     title: {
       display: true,
-      text: "Line Chart",
+      text: "Trend of topics",
     },
 
     zoom: {
@@ -69,7 +69,8 @@ const options = {
       },
     },
     y: {
-      stacked: true,
+      // stacked: true,
+      // fill: false,
       title: {
         display: true,
         text: "Tweet Count",
@@ -91,7 +92,7 @@ const optionsPie = {
     },
     title: {
       display: true,
-      text: "Bar Graph",
+      text: "Total number of tweets for individual topics",
     },
   },
 };
@@ -145,7 +146,7 @@ const fetchLabels = async (startDate, endDate) =>
           return {
             data: dataArrays[column.field],
             label: column.label,
-            fill: true,
+            // fill: true,
             borderColor: column.areaColor,
             backgroundColor: column.areaColor,
           };
@@ -185,7 +186,7 @@ function LineChart() {
           <Line ref={chartRef} options={options} data={labels} />
         </Card>
       )}
-      <BarChart />
+      <BarChart options={optionsPie} />
     </div>
   );
 }
