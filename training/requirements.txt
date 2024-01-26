@@ -26,7 +26,7 @@ oauthlib==3.2.1
 packaging==21.3
 pandas==1.4.3
 protobuf==3.19.5
-pyarrow==8.0.0
+pyarrow==14.0.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pyDeprecate==0.3.2
